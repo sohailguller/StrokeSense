@@ -131,7 +131,7 @@ private struct BeFastHeroCard: View {
     @Namespace private var indicator
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @ScaledMetric(relativeTo: .largeTitle) private var symbolSize: CGFloat = 64
+    @ScaledMetric(relativeTo: .largeTitle) private var symbolSize: CGFloat = 56
 
     /// Symbol beside the text normally; stacked at accessibility text sizes.
     private var signLayout: AnyLayout {
@@ -149,7 +149,8 @@ private struct BeFastHeroCard: View {
         signLayout {
             Image(systemName: sign.systemImage)
                 .font(.illustration(size: symbolSize))
-                .frame(width: symbolSize * 1.25, height: symbolSize * 1.1)
+                // Wide enough for the widest symbol (the eye); the push transition clips to this frame.
+                .frame(width: symbolSize * 1.7, height: symbolSize * 1.2)
             VStack(alignment: .leading, spacing: Spacing.xxs) {
                 Text(sign.name)
                     .font(.cardTitle)
