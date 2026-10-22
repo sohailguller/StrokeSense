@@ -47,7 +47,7 @@ struct ProfileView: View {
                 } header: {
                     Text("About")
                 } footer: {
-                    Text("StrokeSense provides general education, not medical advice. Questions you ask the Stroke Expert are sent to OpenAI to generate answers and may be used to improve their models. Don't share personal health details. In an emergency, call your local emergency number.")
+                    Text("StrokeSense provides general education, not medical advice. Questions you ask the Stroke Expert are sent to OpenAI to generate answers and may be used to improve their models. Don't share personal health details. In an emergency, call an ambulance.")
                 }
             }
             .scrollContentBackground(.hidden)

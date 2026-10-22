@@ -16,7 +16,7 @@ struct TypesView: View {
             points: [
                 "Clot-dissolving medicine works best when given within a few hours of the first symptoms.",
                 "Doctors may also remove large clots with a catheter (thrombectomy).",
-                "Every minute counts, so call your local emergency number right away."
+                "Every minute counts, so call an ambulance right away."
             ],
             source: .nhlbiOverview
         ),

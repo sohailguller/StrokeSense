@@ -33,7 +33,7 @@ final class ChatSession: ObservableObject {
 
         A **transient ischemic attack (TIA)**, sometimes called a mini-stroke, is a temporary blockage. Its symptoms go away, but it is a warning sign of a future stroke and needs urgent care.
 
-        If you notice signs of a stroke, **call your local emergency number right away**.
+        If you notice signs of a stroke, **call an ambulance right away**.
         """,
         "What are the symptoms of a stroke?": """
         Stroke symptoms appear **suddenly**. Use **BE FAST** to remember them:
@@ -43,9 +43,9 @@ final class ChatSession: ObservableObject {
         - **F**ace: one side of the face droops or feels numb
         - **A**rms: weakness or numbness in an arm or leg, often on one side
         - **S**peech: slurred speech or trouble understanding
-        - **T**ime: call your local emergency number and note when symptoms started
+        - **T**ime: call an ambulance and note when symptoms started
 
-        A sudden, severe headache with no known cause can also be a sign. Call for help even if the symptoms go away.
+        A sudden, severe headache with no known cause can also be a sign. Call an ambulance even if the symptoms go away.
         """,
         "How can I prevent a stroke?": """
         Many strokes can be prevented by managing risk factors:

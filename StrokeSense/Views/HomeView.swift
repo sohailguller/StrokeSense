@@ -105,6 +105,7 @@ struct HomeView: View {
 // MARK: - Cards
 
 /// The signs of stroke, cycling one at a time like a flash card. Tapping a letter jumps to it.
+/// The panel and the letter indicator move together, sideways, on one animation.
 private struct BeFastHeroCard: View {
     private struct Sign {
         let letter: String
@@ -119,17 +120,18 @@ private struct BeFastHeroCard: View {
         Sign(letter: "F", name: "Face", prompt: "Ask them to smile. Does one side droop?", systemImage: "face.smiling"),
         Sign(letter: "A", name: "Arms", prompt: "Ask them to raise both arms. Does one drift down?", systemImage: "figure.arms.open"),
         Sign(letter: "S", name: "Speech", prompt: "Is their speech slurred or strange?", systemImage: "mouth.fill"),
-        Sign(letter: "T", name: "Time", prompt: "Call your local emergency number right away", systemImage: "clock.fill")
+        Sign(letter: "T", name: "Time", prompt: "Call an ambulance right away", systemImage: "clock.fill")
     ]
 
+    private static let motion = Animation.smooth(duration: 0.45)
+
     @State private var index = 0
+    @State private var forward = true
     @State private var taps = 0
     @Namespace private var indicator
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .largeTitle) private var symbolSize: CGFloat = 64
-
-    private var sign: Sign { signs[index] }
 
     /// Symbol beside the text normally; stacked at accessibility text sizes.
     private var signLayout: AnyLayout {
@@ -138,36 +140,42 @@ private struct BeFastHeroCard: View {
             : AnyLayout(HStackLayout(spacing: Spacing.l))
     }
 
+    private func show(_ newIndex: Int) {
+        forward = newIndex > index
+        withAnimation(reduceMotion ? .none : Self.motion) { index = newIndex }
+    }
+
+    private func panel(_ sign: Sign) -> some View {
+        signLayout {
+            Image(systemName: sign.systemImage)
+                .font(.illustration(size: symbolSize))
+                .frame(width: symbolSize * 1.25, height: symbolSize * 1.1)
+            VStack(alignment: .leading, spacing: Spacing.xxs) {
+                Text(sign.name)
+                    .font(.cardTitle)
+                Text(sign.prompt)
+                    .font(.subheadline.weight(.medium))
+                    .opacity(0.9)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .foregroundStyle(.white)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.l) {
             Text("Know the signs of stroke")
                 .kicker(.white.opacity(0.9))
 
-            signLayout {
-                Image(systemName: sign.systemImage)
-                    .font(.illustration(size: symbolSize))
-                    .foregroundStyle(.white)
-                    .contentTransition(.symbolEffect(.replace.downUp))
-                    .symbolEffect(.bounce, value: index)
-                    .frame(width: symbolSize * 1.25, height: symbolSize * 1.1)
-
-                // Every sign is laid out at once so the card never changes height.
-                ZStack(alignment: .leading) {
-                    ForEach(signs.indices, id: \.self) { i in
-                        VStack(alignment: .leading, spacing: Spacing.xxs) {
-                            Text(signs[i].name)
-                                .font(.cardTitle)
-                            Text(signs[i].prompt)
-                                .font(.subheadline.weight(.medium))
-                                .opacity(0.9)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .foregroundStyle(.white)
-                        .opacity(i == index ? 1 : 0)
-                        .offset(y: i == index ? 0 : 6)
-                    }
+            ZStack(alignment: .leading) {
+                // Every sign laid out invisibly so the card never changes height.
+                ForEach(signs.indices, id: \.self) { i in
+                    panel(signs[i]).hidden()
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                panel(signs[index])
+                    .id(index)
+                    .transition(.push(from: forward ? .trailing : .leading))
             }
             .accessibilityHidden(true)
 
@@ -175,13 +183,12 @@ private struct BeFastHeroCard: View {
                 ForEach(signs.indices, id: \.self) { i in
                     Button {
                         taps += 1
-                        withAnimation(.snappy) { index = i }
+                        show(i)
                     } label: {
                         VStack(spacing: Spacing.xxs) {
                             Text(signs[i].letter)
                                 .font(.letterMark)
                                 .foregroundStyle(.white.opacity(i == index ? 1 : 0.45))
-                                .scaleEffect(i == index ? 1 : 0.85)
                             Capsule()
                                 .fill(.clear)
                                 .frame(width: 20, height: 4)
@@ -213,13 +220,14 @@ private struct BeFastHeroCard: View {
             .buttonStyle(.plain)
         }
         .padding(Spacing.l)
-        .background(.brandPrimary, in: RoundedRectangle(cornerRadius: Radius.hero, style: .continuous))
+        .background(.brandPrimary)
+        .clipShape(RoundedRectangle(cornerRadius: Radius.hero, style: .continuous))
         // Restarts whenever the sign changes, so a tap resets the timer.
         .task(id: index) {
             guard !reduceMotion else { return }
-            try? await Task.sleep(for: .seconds(2.6))
+            try? await Task.sleep(for: .seconds(3))
             guard !Task.isCancelled else { return }
-            withAnimation(.snappy) { index = (index + 1) % signs.count }
+            show((index + 1) % signs.count)
         }
     }
 }

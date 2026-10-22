@@ -20,7 +20,7 @@ struct BefastView: View {
         Sign(letter: "F", title: "Face", detail: "One side of the face droops or feels numb. Ask the person to smile."),
         Sign(letter: "A", title: "Arms", detail: "Weakness or numbness in an arm or leg, often on one side. Ask them to raise both arms."),
         Sign(letter: "S", title: "Speech", detail: "Slurred speech, trouble speaking, or confusion."),
-        Sign(letter: "T", title: "Time to call for help", detail: "Call your local emergency number right away, even if the symptoms go away. Note the time they started.")
+        Sign(letter: "T", title: "Time to call an ambulance", detail: "Call right away, even if the symptoms go away. Note the time they started.")
     ]
 
     @ScaledMetric(relativeTo: .largeTitle) private var letterWidth: CGFloat = 52
@@ -31,7 +31,7 @@ struct BefastView: View {
             hero: TopicHero(
                 eyebrow: "Recognize a stroke",
                 title: "B.E. F.A.S.T.",
-                summary: "Stroke symptoms come on suddenly. If you notice any one of these signs, call your local emergency number immediately. Fast treatment can save brain function.",
+                summary: "Stroke symptoms come on suddenly. If you notice any one of these signs, call an ambulance immediately. Fast treatment can save brain function.",
                 systemImage: "bolt.heart.fill",
                 tint: .emergency
             ),
@@ -57,8 +57,6 @@ struct BefastView: View {
                 .padding(Spacing.m)
                 .accessibilityElement(children: .combine)
             }
-
-            EmergencyNote(text: "Call your local emergency number, such as 911 in the US and Canada, 112 in Europe or 999 in the UK.")
         }
     }
 }

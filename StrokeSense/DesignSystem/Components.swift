@@ -130,26 +130,6 @@ struct ExpertMark: View {
     }
 }
 
-// MARK: - Emergency
-
-/// Region-neutral emergency guidance. Emergency numbers differ by country, so the app
-/// never dials one; it tells people to call their local number instead.
-struct EmergencyNote: View {
-    var text = "Notice any of these signs? Call your local emergency number right away."
-    var color: Color = .emergency
-
-    var body: some View {
-        Label {
-            Text(text)
-        } icon: {
-            Image(systemName: "phone.fill")
-        }
-        .font(.subheadline.weight(.semibold))
-        .foregroundStyle(color)
-        .fixedSize(horizontal: false, vertical: true)
-    }
-}
-
 // MARK: - Favorites
 
 struct FavoriteButton: View {
