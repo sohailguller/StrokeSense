@@ -120,7 +120,7 @@ private struct BeFastHeroCard: View {
         Sign(letter: "F", name: "Face", prompt: "Ask them to smile. Does one side droop?", systemImage: "face.smiling"),
         Sign(letter: "A", name: "Arms", prompt: "Ask them to raise both arms. Does one drift down?", systemImage: "figure.arms.open"),
         Sign(letter: "S", name: "Speech", prompt: "Is their speech slurred or strange?", systemImage: "mouth.fill"),
-        Sign(letter: "T", name: "Time", prompt: "Call an ambulance right away", systemImage: "clock.fill")
+        Sign(letter: "T", name: "Time", prompt: "Call 911 right away", systemImage: "clock.fill")
     ]
 
     private static let motion = Animation.smooth(duration: 0.45)

@@ -20,7 +20,7 @@ struct BefastView: View {
         Sign(letter: "F", title: "Face", detail: "One side of the face droops or feels numb. Ask the person to smile."),
         Sign(letter: "A", title: "Arms", detail: "Weakness or numbness in an arm or leg, often on one side. Ask them to raise both arms."),
         Sign(letter: "S", title: "Speech", detail: "Slurred speech, trouble speaking, or confusion."),
-        Sign(letter: "T", title: "Time to call an ambulance", detail: "Call right away, even if the symptoms go away. Note the time they started.")
+        Sign(letter: "T", title: "Time", detail: "Call 911 right away, even if the symptoms go away. Note the time they started.")
     ]
 
     @ScaledMetric(relativeTo: .largeTitle) private var letterWidth: CGFloat = 52
