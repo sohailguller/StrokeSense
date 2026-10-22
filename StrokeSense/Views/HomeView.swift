@@ -115,11 +115,11 @@ private struct BeFastHeroCard: View {
     }
 
     private let signs = [
-        Sign(letter: "B", name: "Balance", prompt: "Sudden dizziness or loss of balance", systemImage: "figure.fall"),
-        Sign(letter: "E", name: "Eyes", prompt: "Sudden trouble seeing in one or both eyes", systemImage: "eye.fill"),
-        Sign(letter: "F", name: "Face", prompt: "Ask them to smile. Does one side droop?", systemImage: "face.smiling"),
-        Sign(letter: "A", name: "Arms", prompt: "Ask them to raise both arms. Does one drift down?", systemImage: "figure.arms.open"),
-        Sign(letter: "S", name: "Speech", prompt: "Is their speech slurred or strange?", systemImage: "mouth.fill"),
+        Sign(letter: "B", name: "Balance", prompt: "Sudden loss of balance or dizziness", systemImage: "figure.fall"),
+        Sign(letter: "E", name: "Eyes", prompt: "Sudden blurred, double or lost vision", systemImage: "eye.fill"),
+        Sign(letter: "F", name: "Face", prompt: "One side of the face droops", systemImage: "face.smiling"),
+        Sign(letter: "A", name: "Arms", prompt: "One arm or leg is weak or numb", systemImage: "figure.arms.open"),
+        Sign(letter: "S", name: "Speech", prompt: "Slurred speech or trouble speaking", systemImage: "mouth.fill"),
         Sign(letter: "T", name: "Time", prompt: "Call 911 right away", systemImage: "clock.fill")
     ]
 

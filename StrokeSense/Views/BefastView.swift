@@ -15,11 +15,11 @@ struct BefastView: View {
     }
 
     private let signs = [
-        Sign(letter: "B", title: "Balance", detail: "Sudden loss of balance or coordination, or dizziness."),
-        Sign(letter: "E", title: "Eyes", detail: "Sudden vision changes or loss of vision in one or both eyes."),
-        Sign(letter: "F", title: "Face", detail: "One side of the face droops or feels numb. Ask the person to smile."),
-        Sign(letter: "A", title: "Arms", detail: "Weakness or numbness in an arm or leg, often on one side. Ask them to raise both arms."),
-        Sign(letter: "S", title: "Speech", detail: "Slurred speech, trouble speaking, or confusion."),
+        Sign(letter: "B", title: "Balance", detail: "Sudden loss of balance or coordination, dizziness, or trouble walking."),
+        Sign(letter: "E", title: "Eyes", detail: "Sudden blurred or double vision, or loss of vision in one or both eyes."),
+        Sign(letter: "F", title: "Face", detail: "One side of the face droops or feels numb. The smile may look uneven."),
+        Sign(letter: "A", title: "Arms", detail: "Sudden weakness or numbness in an arm or leg, often on one side of the body."),
+        Sign(letter: "S", title: "Speech", detail: "Slurred speech, trouble speaking or understanding, or sudden confusion."),
         Sign(letter: "T", title: "Time", detail: "Call 911 right away, even if the symptoms go away. Note the time they started.")
     ]
 
