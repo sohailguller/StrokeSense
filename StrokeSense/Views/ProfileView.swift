@@ -5,122 +5,85 @@
 //  Created by Sohail Guller on 11/1/24.
 //
 import SwiftUI
+import PhotosUI
 
+/// Profile and app information, presented as a sheet from Today.
 struct ProfileView: View {
-    @EnvironmentObject var store: UserStore
-    @State private var editUser: User = User.default
-    @State private var isEditing: Bool = false
-    @State private var showImagePicker: Bool = false
-    @State private var selectedImage: UIImage? = nil
+    @EnvironmentObject private var store: UserStore
+    @Environment(\.dismiss) private var dismiss
+    @State private var photoItem: PhotosPickerItem?
+    @State private var openURL: URL?
+
+    private var appVersion: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+    }
 
     var body: some View {
-        NavigationView {
-            VStack {
-                ZStack {
-                    if store.user.profilePicture == UIImage(systemName: "person.crop.circle.fill") {
-                        Image(systemName: "person.crop.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 200, height: 200)
-                            .clipShape(Circle())
-                            .foregroundColor(.gray)
-                            .shadow(radius: 5)
-                    } else {
-                        Image(uiImage: store.user.profilePicture)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 200, height: 200)
-                            .clipShape(Circle())
-                            .shadow(radius: 5)
+        let hasPhoto = !store.user.profilePicture.isSymbolImage
+        NavigationStack {
+            Form {
+                Section {
+                    VStack(spacing: Spacing.s) {
+                        AvatarView(image: store.user.profilePicture, size: 96)
+                        PhotosPicker(selection: $photoItem, matching: .images) {
+                            Text(hasPhoto ? "Change Photo" : "Add Photo")
+                                .font(.subheadline.weight(.semibold))
+                        }
+                        .tint(.accentColor)
                     }
-                    
-                    if isEditing {
-                        Circle()
-                            .fill(Color.black.opacity(0.3))
-                            .frame(width: 200, height: 200)
-                            .overlay(
-                                Image(systemName: "camera.fill")
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 24))
-                            )
-                            .onTapGesture {
-                                showImagePicker.toggle()
-                            }
-                    }
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
                 }
-                .padding()
-                
-                TextField("Enter name", text: $store.user.username)
-                    .font(.title2)
-                    .multilineTextAlignment(.center)
-                    .padding(5)
-                    .frame(maxWidth: 300, maxHeight: 50)
-                    .background(Color.gray.opacity(0.15))
-                    .cornerRadius(8)
-                    .disabled(!isEditing)
-                
-                Spacer()
+
+                Section("Name") {
+                    TextField("Your name", text: $store.user.username)
+                        .textContentType(.givenName)
+                        .submitLabel(.done)
+                }
+
+                Section {
+                    LabeledContent("Version", value: appVersion)
+                    Button("Where our information comes from") { openURL = Source.nhlbiOverview.url }
+                } header: {
+                    Text("About")
+                } footer: {
+                    Text("StrokeSense provides general education, not medical advice. Questions you ask the Stroke Expert are sent to OpenAI to generate answers and may be used to improve their models. Don't share personal health details. In an emergency, call 911.")
+                }
+
+                Section {
+                    EmergencyCallButton()
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                }
             }
+            .scrollContentBackground(.hidden)
+            .background(.surface)
+            .tint(.accentColor)
             .navigationTitle("Profile")
-            .sheet(isPresented: $showImagePicker, onDismiss: loadImage) {
-                ImagePicker(image: $selectedImage)
-            }
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        isEditing.toggle()
-                    }) {
-                        Text(isEditing ? "Done" : "Edit")
-                            .font(.headline)
-                            .foregroundColor(.blue)
-                    }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                        .fontWeight(.semibold)
                 }
             }
-        }
-    }
-    
-    private func loadImage() {
-        guard let selectedImage = selectedImage else { return }
-        store.user.profilePicture = selectedImage
-    }
-
-}
-
-
-
-struct ImagePicker: UIViewControllerRepresentable {
-    @Binding var image: UIImage?
-    
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.delegate = context.coordinator
-        picker.sourceType = .photoLibrary
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-        let parent: ImagePicker
-        
-        init(_ parent: ImagePicker) {
-            self.parent = parent
-        }
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let uiImage = info[.originalImage] as? UIImage {
-                parent.image = uiImage
+            .onChange(of: photoItem) { _, item in
+                Task { await loadPhoto(item) }
             }
-            picker.dismiss(animated: true)
+            .safariSheet(url: $openURL)
         }
-        
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            picker.dismiss(animated: true)
-        }
+    }
+
+    private func loadPhoto(_ item: PhotosPickerItem?) async {
+        guard let item,
+              let data = try? await item.loadTransferable(type: Data.self),
+              let image = UIImage(data: data) else { return }
+        // Keep the stored profile small while preserving the aspect ratio.
+        let scale = min(1, 512 / max(image.size.width, image.size.height))
+        let size = CGSize(width: image.size.width * scale, height: image.size.height * scale)
+        let thumbnail = image.preparingThumbnail(of: size) ?? image
+        store.user.profilePicture = thumbnail
+        store.objectWillChange.send()
     }
 }
 

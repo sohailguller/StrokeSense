@@ -6,98 +6,74 @@
 //
 import SwiftUI
 
-// MARK: - Treatments Data Model
-struct Treatment: Identifiable {
-    let id = UUID()
-    let name: String
-    let icon: String
-    let summary: String
-    let details: String
-}
-
-// MARK: - Treatments View with Details
 struct TreatmentsView: View {
-    let treatments: [Treatment] = [
-            Treatment(
-                name: "Clot‑busting Medication",
-                icon: "💊",
-                summary: "tPA to dissolve clots",
-                details: "A tissue plasminogen activator (tPA) is a special medicine given through an IV to help dissolve blood clots in the brain.\n\n• Best when started within 3–4.5 hours of symptom onset.\n• Can improve recovery and reduce disability.\n• Not used if there is bleeding risk (recent surgery, bleeding disorders).\n\nSource: American Heart Association (heart.org)"
-            ),
-            Treatment(
-                name: "Mechanical Thrombectomy",
-                icon: "🛠️",
-                summary: "Catheter-based clot removal",
-                details: "A thin tube (catheter) is guided through an artery to the brain to physically remove the clot.\n\n• Most effective when started within 6–24 hours, depending on patient condition.\n• Often used along with tPA for larger vessel strokes.\n• Can restore blood flow quickly, reducing brain damage.\n\nSource: American Heart Association (heart.org)"
-            ),
-            Treatment(
-                name: "Hemorrhage Surgery",
-                icon: "🪡",
-                summary: "Treat bleeding in brain",
-                details: "In hemorrhagic stroke, surgery may be needed to stop bleeding and relieve pressure.\n\n• Options include clipping or coiling an aneurysm to seal a bleeding vessel.\n• A craniotomy can remove pooled blood (hematoma) and lower pressure.\n• Quick treatment can prevent further brain injury.\n\nSource: American Heart Association (heart.org)"
-            )
-        ]
+    private let treatments = [
+        TopicDetail(
+            systemImage: "syringe.fill",
+            title: "Clot-dissolving medicine",
+            summary: "Medicine given through an IV to break up a clot.",
+            body: "For ischemic stroke, a clot-dissolving medicine such as tPA can restore blood flow to the brain.",
+            points: [
+                "Works best when started within 3 to 4.5 hours of the first symptoms.",
+                "Can improve recovery and reduce disability.",
+                "Not used when there is a high risk of bleeding, such as after recent surgery."
+            ],
+            source: .nhlbiTreatment
+        ),
+        TopicDetail(
+            systemImage: "arrow.down.to.line.compact",
+            title: "Mechanical thrombectomy",
+            summary: "A catheter procedure to remove a large clot.",
+            body: "A thin tube is guided through an artery to the brain, where doctors remove the clot directly.",
+            points: [
+                "Can be done up to 24 hours after symptoms start for some patients.",
+                "Often used together with clot-dissolving medicine for strokes in large arteries.",
+                "Restores blood flow quickly to limit brain damage."
+            ],
+            source: .nhlbiTreatment
+        ),
+        TopicDetail(
+            systemImage: "cross.case.fill",
+            title: "Surgery for bleeding",
+            summary: "Procedures to stop bleeding and relieve pressure.",
+            body: "In a hemorrhagic stroke, surgery may be needed to stop the bleeding and lower pressure on the brain.",
+            points: [
+                "An aneurysm can be clipped or coiled to seal the bleeding vessel.",
+                "A craniotomy can remove pooled blood and relieve pressure.",
+                "Quick treatment helps prevent further brain injury."
+            ],
+            source: .nhlbiTreatment
+        ),
+        TopicDetail(
+            systemImage: "figure.walk.motion",
+            title: "Rehabilitation",
+            summary: "Therapy to regain skills after a stroke.",
+            body: "Recovery often continues for months. Rehabilitation helps people relearn movement, speech and everyday tasks.",
+            points: [
+                "May include physical, occupational and speech therapy.",
+                "Starting early, while still in the hospital, tends to help.",
+                "Family and caregivers are an important part of recovery."
+            ],
+            source: .nhlbiRecovery
+        )
+    ]
 
+    @State private var selected: TopicDetail?
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Infographic-style Header
-                VStack(spacing: 8) {
-                    Text("Treatments")
-                        .font(.system(size: 36, weight: .bold))
-                    Text("Key interventions to manage stroke")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
-                }
-                .padding()
-                .frame(maxWidth: .infinity)
-              //  .background(Color.white)
-                .cornerRadius(12)
-                .padding(.horizontal)
-                .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-
-                // Treatment cards
-                ForEach(treatments) { t in
-                    NavigationLink(destination: TreatmentDetailView(treatment: t)) {
-                        CardView(icon: t.icon, title: t.name, subtitle: t.summary)
-                    }
-                    .padding(.horizontal)
-                }
-                Spacer(minLength: 40)
-            }
-            .padding(.vertical)
-            
+        InfoTopicScreen(
+            navigationTitle: "Treatments",
+            hero: TopicHero(
+                eyebrow: "Understand",
+                title: "Treatments",
+                summary: "Treatment depends on the type of stroke and how quickly it begins. The sooner, the better.",
+                systemImage: "cross.case.fill"
+            ),
+            sources: [.nhlbiTreatment, .nhlbiRecovery]
+        ) {
+            TopicDetailList(details: treatments, selected: $selected)
         }
-        .background(Color(.systemPink).opacity(0.1))
-    }
-}
-
-struct TreatmentDetailView: View {
-    let treatment: Treatment
-    var body: some View {
-        VStack(spacing: 20) {
-            Text(treatment.icon)
-                .font(.system(size: 80))
-            Text(treatment.name)
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .multilineTextAlignment(.center)
-            Text(treatment.summary)
-                .font(.title3)
-                .foregroundColor(.secondary)
-            Divider()
-            ScrollView {
-                Text(treatment.details)
-                    .font(.body)
-                    .multilineTextAlignment(.leading)
-                    .padding(.horizontal)
-            }
-            Spacer()
-        }
-        .background(Color(.systemPink).opacity(0.1))
-
-        .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $selected) { TopicDetailSheet(detail: $0, eyebrow: "Treatment") }
     }
 }
 

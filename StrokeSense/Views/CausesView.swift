@@ -6,77 +6,44 @@
 //
 import SwiftUI
 
+/// Risk factors for stroke.
 struct CausesView: View {
-    let topRow = [
-        ("Diabetes", "🩸"),
-        ("High blood pressure", "🩺")
-    ]
+    private struct RiskFactor: Identifiable {
+        let systemImage: String
+        let title: String
+        let detail: String
+        var id: String { title }
+    }
 
-    let middleRow = ("Cardio vascular disease", "❤️")
-
-    let bottomRow = [
-        ("Drug usage", "💊"),
-        ("Sleep apnea", "😴")
+    private let factors = [
+        RiskFactor(systemImage: "gauge.with.dots.needle.67percent", title: "High blood pressure", detail: "The leading cause of stroke. Over time it damages and weakens blood vessels."),
+        RiskFactor(systemImage: "drop.fill", title: "Diabetes", detail: "High blood sugar damages blood vessels and makes clots more likely."),
+        RiskFactor(systemImage: "waveform.path.ecg", title: "Heart disease", detail: "Conditions such as atrial fibrillation (AFib) can cause clots that travel to the brain."),
+        RiskFactor(systemImage: "lungs.fill", title: "Smoking", detail: "Damages blood vessels and raises blood pressure."),
+        RiskFactor(systemImage: "bed.double.fill", title: "Sleep apnea", detail: "Repeated pauses in breathing during sleep strain the heart and blood vessels."),
+        RiskFactor(systemImage: "pills.fill", title: "Drug use", detail: "Drugs such as cocaine and amphetamines can trigger a stroke, even in young people.")
     ]
 
     var body: some View {
-        GeometryReader { geo in
-            VStack(spacing: 24) {
-                // Header
-                VStack(spacing: 10) {
-                    Text("Risk Factors")
-                        .font(.system(size: 36, weight: .bold))
-                        .foregroundColor(.primary)
-                    Text("Factors that make you prone to having a stroke")
-                        .font(.title3)
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal)
-                }
-                .padding(.top, 20)
-
-                // Top row
-                HStack(spacing: 20) {
-                    ForEach(topRow, id: \.0) { item in
-                        riskBox(icon: item.1, title: item.0, width: geo.size.width * 0.42, height: 140)
-                    }
-                }
-
-                // Middle full-width
-                riskBox(icon: middleRow.1, title: middleRow.0, width: geo.size.width * 0.88, height: 140)
-
-                // Bottom row
-                HStack(spacing: 20) {
-                    ForEach(bottomRow, id: \.0) { item in
-                        riskBox(icon: item.1, title: item.0, width: geo.size.width * 0.42, height: 140)
-                    }
-                }
-
-                Spacer()
+        InfoTopicScreen(
+            navigationTitle: "Risk Factors",
+            hero: TopicHero(
+                eyebrow: "Understand",
+                title: "Risk factors",
+                summary: "Some conditions and habits make a stroke more likely. Many of them can be treated or changed.",
+                systemImage: "exclamationmark.triangle.fill"
+            ),
+            sources: [.nhlbiCauses]
+        ) {
+            CardList(items: factors) { factor in
+                TopicItemRow(systemImage: factor.systemImage, title: factor.title, detail: factor.detail)
             }
-            .frame(width: geo.size.width, height: geo.size.height)
-            .background(Color(.systemPink).opacity(0.1))
         }
-    }
-
-    func riskBox(icon: String, title: String, width: CGFloat, height: CGFloat) -> some View {
-        VStack(spacing: 12) {
-            Text(icon)
-                .font(.system(size: 48)) // Larger emoji
-            Text(title)
-                .font(.title3)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-                .minimumScaleFactor(0.7)
-        }
-        .padding()
-        .frame(width: width, height: height)
-        .background(Color.white)
-        .cornerRadius(20)
-        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
     }
 }
 
 #Preview {
-    CausesView()
+    NavigationStack {
+        CausesView()
+    }
 }

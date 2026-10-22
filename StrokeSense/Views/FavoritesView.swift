@@ -7,64 +7,69 @@
 
 import SwiftUI
 
+/// The Saved tab.
 struct FavoritesView: View {
-    @EnvironmentObject var favoritesManager: FavoritesManager
-    
+    @EnvironmentObject private var favoritesManager: FavoritesManager
+    @State private var playingVideo: Video?
+
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 16) {
-                if favoritesManager.favorites.isEmpty {
-                    Text("Liked podcasts will show up here")
-                        .padding()
-                } else {
-                    ForEach(favoritesManager.favorites.keys.sorted(), id: \.self) { videoID in
-                        if let name = favoritesManager.favorites[videoID] {
-                            VStack(alignment: .leading, spacing: 12) {
-                                YouTubeView(videoID: videoID)
-                                    .aspectRatio(16 / 9, contentMode: .fit)
-                                    .cornerRadius(12)
-                                    .padding(.top)
-                                
-                                HStack(alignment: .top) {
-                                    Text(name)
-                                        .font(.headline)
-                                        .frame(maxWidth: 300, alignment: .leading)
-                                    
-                                    Spacer()
-                                    
-                                    Button(action: {
-                                        favoritesManager.removeFavorite(sound: videoID)
-                                    }) {
-                                        Image(systemName: "heart.fill")
-                                            .foregroundColor(.red)
-                                            .font(.title2)
-                                    }
-                                }
-                                .padding(.horizontal)
-                                .padding(.bottom)
-                            }
-                            .background(Color(.systemBackground))
-                            .cornerRadius(16)
-                            .shadow(radius: 2)
-                            .padding(.horizontal)
-                        }
+        List {
+            ForEach(favoritesManager.savedVideos) { video in
+                Button {
+                    playingVideo = video
+                } label: {
+                    SavedVideoRow(video: video)
+                }
+                .buttonStyle(.plain)
+                .contextMenu { VideoContextActions(video: video) }
+                .swipeActions {
+                    Button("Remove", systemImage: "heart.slash", role: .destructive) {
+                        withAnimation { favoritesManager.removeFavorite(videoID: video.videoID) }
                     }
                 }
             }
-            .padding(.vertical)
         }
-        .navigationTitle("Favorites")
-        
-        Text("All podcasts are created by the developer(s) of this app. They contain info and recommendations based on online research. There can be mistakes. Check important info. Seek a doctor's advice in addition to using this app and before making any medical decisions.")
-            .font(.footnote)
-            .foregroundColor(.gray)
-            .padding()
-            .multilineTextAlignment(.center)
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(.surface)
+        .overlay {
+            if favoritesManager.favorites.isEmpty {
+                ContentUnavailableView(
+                    "No saved videos",
+                    systemImage: "heart",
+                    description: Text("Tap the heart on any video to keep it here.")
+                )
+            }
+        }
+        .navigationTitle("Saved")
+        .sheet(item: $playingVideo) { VideoPlayerSheet(video: $0) }
     }
 }
 
+private struct SavedVideoRow: View {
+    let video: Video
+    @ScaledMetric(relativeTo: .body) private var thumbWidth: CGFloat = 112
+
+    var body: some View {
+        HStack(spacing: Spacing.m) {
+            VideoThumbnail(videoID: video.videoID, radius: Radius.control, showsPlayGlyph: false)
+                .frame(width: thumbWidth)
+            Text(video.name)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.ink)
+                .lineLimit(3)
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, Spacing.xxs)
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityHint("Plays the video")
+    }
+}
 
 #Preview {
-    FavoritesView()
-        .environmentObject(FavoritesManager())
+    NavigationStack {
+        FavoritesView()
+    }
+    .environmentObject(FavoritesManager())
 }

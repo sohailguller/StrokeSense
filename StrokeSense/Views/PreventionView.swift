@@ -7,58 +7,44 @@
 import SwiftUI
 
 struct PreventionView: View {
-    let tips = [
-        ("Eat healthy food", "🥗"),
-        ("Sleep", "🧘‍♀️"),
-        ("Exercise regularly", "🏋️‍♂️👟"),
-        ("Control blood pressure", "🩺"),
-        ("Quit smoking and tobacco", "🚭"),
-        ("Maintain healthy weight", "⚖️"),
-        ("Control Cholesterol", "🧬"),
-        ("Manage Blood Sugar", "🩸")
+    private struct Tip: Identifiable {
+        let systemImage: String
+        let title: String
+        let detail: String
+        var id: String { title }
+    }
+
+    private let tips = [
+        Tip(systemImage: "gauge.with.dots.needle.33percent", title: "Control blood pressure", detail: "Check it regularly and take medicine as prescribed."),
+        Tip(systemImage: "drop.fill", title: "Manage blood sugar", detail: "Keep diabetes under control with your care team."),
+        Tip(systemImage: "heart.text.square.fill", title: "Manage cholesterol", detail: "Ask your doctor how often to get it checked."),
+        Tip(systemImage: "nosign", title: "Quit smoking and tobacco", detail: "Your risk starts dropping soon after you quit."),
+        Tip(systemImage: "figure.walk", title: "Stay active", detail: "Aim for about 30 minutes of moderate activity most days."),
+        Tip(systemImage: "fork.knife", title: "Eat a heart-healthy diet", detail: "More vegetables, fruit and whole grains; less salt and processed food."),
+        Tip(systemImage: "scalemass.fill", title: "Keep a healthy weight", detail: "Even modest weight loss can lower blood pressure."),
+        Tip(systemImage: "moon.zzz.fill", title: "Sleep well", detail: "Aim for 7 to 9 hours, and get checked if you snore heavily.")
     ]
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                VStack(spacing: 5) {
-                    Text("Reduce Your Risk")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    Text("8 tips for prevention for all ages")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                .padding()
-                .background(Color.white)
-                .cornerRadius(10)
-                .shadow(radius: 5)
-
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
-                    ForEach(tips, id: \.0) { tip in
-                        VStack(spacing: 10) {
-                            Text(tip.1)
-                                .font(.largeTitle)
-                            Text(tip.0)
-                                .font(.headline)
-                                .multilineTextAlignment(.center)
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .shadow(radius: 3)
-                    }
-                }
-                .padding()
+        InfoTopicScreen(
+            navigationTitle: "Prevention",
+            hero: TopicHero(
+                eyebrow: "Understand",
+                title: "Lower your risk",
+                summary: "Most strokes are linked to risk factors you can manage. These habits help at any age.",
+                systemImage: "shield.lefthalf.filled"
+            ),
+            sources: [.nhlbiCauses, .nhlbiOverview]
+        ) {
+            CardList(items: tips) { tip in
+                TopicItemRow(systemImage: tip.systemImage, title: tip.title, detail: tip.detail)
             }
-            .padding()
-            
         }
-        .background(Color(.systemPink).opacity(0.1))
     }
 }
 
 #Preview {
-    PreventionView()
+    NavigationStack {
+        PreventionView()
+    }
 }

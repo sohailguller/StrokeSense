@@ -7,71 +7,67 @@
 import SwiftUI
 
 struct BefastView: View {
-    let symptoms = [
-        ("Balance", "Loss of balance or dizziness", "🧍‍♂️"),
-        ("Eyes", "Vision changes", "👀"),
-        ("Face", "Facial drooping, severe headache", "😊"),
-        ("Arms", "Weakness, numbness", "💪"),
-        ("Speech", "Slurred speech, trouble speaking, confusion", "🗣️"),
-        ("Time", "To call 911", "⏰")
+    private struct Sign: Identifiable {
+        let letter: String
+        let title: String
+        let detail: String
+        var id: String { letter }
+    }
+
+    private let signs = [
+        Sign(letter: "B", title: "Balance", detail: "Sudden loss of balance or coordination, or dizziness."),
+        Sign(letter: "E", title: "Eyes", detail: "Sudden vision changes or loss of vision in one or both eyes."),
+        Sign(letter: "F", title: "Face", detail: "One side of the face droops or feels numb. Ask the person to smile."),
+        Sign(letter: "A", title: "Arms", detail: "Weakness or numbness in an arm or leg, often on one side. Ask them to raise both arms."),
+        Sign(letter: "S", title: "Speech", detail: "Slurred speech, trouble speaking, or confusion."),
+        Sign(letter: "T", title: "Time to call 911", detail: "Call right away, even if the symptoms go away. Note the time they started.")
     ]
 
+    @ScaledMetric(relativeTo: .largeTitle) private var letterWidth: CGFloat = 52
+
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                VStack(spacing: 8) {
-                    Text("B.E.F.A.S.T")
-                        .font(.system(size: 40, weight: .heavy))
-                        .foregroundColor(.pink)
-                    Text("WHEN IT COMES TO STROKE")
-                        .font(.headline)
-                        .foregroundColor(.gray)
-                }
-
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
-                    ForEach(symptoms, id: \.0) { item in
-                        VStack(spacing: 10) {
-                            Text(item.2)
-                                .font(.largeTitle)
-                            Text(item.0)
-                                .font(.title3)
-                                .fontWeight(.bold)
-                                .foregroundColor(.blue)
-                            Text(item.1)
-                                .font(.subheadline)
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.primary)
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .shadow(radius: 2)
+        InfoTopicScreen(
+            navigationTitle: "B.E. F.A.S.T.",
+            hero: TopicHero(
+                eyebrow: "Recognize a stroke",
+                title: "B.E. F.A.S.T.",
+                summary: "Stroke symptoms come on suddenly. If you notice any one of these signs, call 911 immediately. Fast treatment can save brain function.",
+                systemImage: "bolt.heart.fill",
+                tint: .emergency
+            ),
+            sources: [.nhlbiSymptoms]
+        ) {
+            CardList(items: signs, dividerInset: letterWidth + Spacing.m * 2) { sign in
+                HStack(alignment: .firstTextBaseline, spacing: Spacing.m) {
+                    Text(sign.letter)
+                        .font(.letterMark)
+                        .foregroundStyle(.emergency)
+                        .frame(width: letterWidth, alignment: .center)
+                    VStack(alignment: .leading, spacing: Spacing.xxs) {
+                        Text(sign.title)
+                            .font(.headline)
+                            .foregroundStyle(.ink)
+                        Text(sign.detail)
+                            .font(.subheadline)
+                            .foregroundStyle(.inkMuted)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
+                    Spacer(minLength: 0)
                 }
-                .padding(.horizontal)
-
-                VStack(spacing: 10) {
-                    Text("STROKE. REACT. DON'T REGRET.")
-                        .font(.headline)
-                        .foregroundColor(.red)
-                    Text("Call 911")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 40)
-                        .padding(.vertical, 12)
-                        .background(Color.red)
-                        .cornerRadius(8)
-                }
-                .padding(.top)
+                .padding(Spacing.m)
+                .accessibilityElement(children: .combine)
             }
-            .padding()
         }
-        .background(Color(.systemTeal).opacity(0.05))
+        .safeAreaInset(edge: .bottom) {
+            EmergencyCallButton()
+                .padding(.horizontal, Spacing.l)
+                .padding(.bottom, Spacing.xs)
+        }
     }
 }
 
 #Preview {
-    BefastView()
+    NavigationStack {
+        BefastView()
+    }
 }

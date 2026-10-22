@@ -1,209 +1,314 @@
 //
 //  ChatView.swift
-//  AIChatBot
+//  StrokeSense
 //
 //  Created by Sohail Guller on 2/21/25.
 //
 import SwiftUI
 
-struct ChatView: View {
-    @EnvironmentObject var store: UserStore
-    @EnvironmentObject var favoritesManager: FavoritesManager
-    
+/// One conversation shared across the app, so suggestion chips on Today can open Ask mid-question.
+@MainActor
+final class ChatSession: ObservableObject {
+    @Published private(set) var messages: [ChatMessage] = []
+    @Published private(set) var isLoading = false
+    @Published private(set) var errorMessage: String?
+
     // The system prompt lives in the chat Worker (worker/src/index.js).
-    @State private var messages: [ChatMessage] = []
-    @State private var inputText: String = ""
-    @State private var isLoading = false
-    @State private var showAlert = false
-    @State private var alertMessage = ""
-    let openAIClient = OpenAIClient()
+    private let client = OpenAIClient()
 
-    let frequentlyAsked: [String: String] = [
+    static let suggestions = [
+        "What is a stroke?",
+        "What are the symptoms of a stroke?",
+        "How can I prevent a stroke?"
+    ]
+
+    /// Instant answers for the suggested questions, so they work offline.
+    private static let cannedAnswers: [String: String] = [
         "What is a stroke?": """
-        A **stroke** is a medical emergency that happens when blood flow to a part of the brain is blocked or when a blood vessel in the brain bursts. This causes brain cells to stop receiving oxygen and nutrients, leading to damage or death of those cells.
+        A **stroke** is a medical emergency that happens when blood flow to part of the brain is blocked, or when a blood vessel in the brain bursts. Brain cells stop receiving oxygen and nutrients and begin to die within minutes.
 
-        There are two main types of stroke:
-        1. **Ischemic stroke** – Caused by a blockage (such as a blood clot) in an artery supplying blood to the brain.
-        2. **Hemorrhagic stroke** – Caused by a blood vessel in the brain bursting, leading to bleeding in or around the brain.
+        There are two main types:
+        1. **Ischemic stroke**: a blockage, such as a blood clot, in an artery supplying the brain.
+        2. **Hemorrhagic stroke**: a blood vessel in the brain bursts and bleeds.
 
-        A **Transient Ischemic Attack (TIA)**, or "mini-stroke," is a temporary blockage that resolves on its own but is a warning sign for a possible future stroke.
+        A **transient ischemic attack (TIA)**, sometimes called a mini-stroke, is a temporary blockage. Its symptoms go away, but it is a warning sign of a future stroke and needs urgent care.
 
-        Common **symptoms** include sudden weakness or numbness (especially on one side of the body), trouble speaking, vision problems, dizziness, and severe headache. Acting **FAST** (Face drooping, Arm weakness, Speech difficulty, Time to call emergency services) can save lives.
+        If you notice signs of a stroke, **call 911 right away**.
         """,
         "What are the symptoms of a stroke?": """
-        The symptoms of a **stroke** appear suddenly and may include:
+        Stroke symptoms appear **suddenly**. Use **BE FAST** to remember them:
 
-        1. **Numbness or weakness** in the face, arm, or leg, especially on one side of the body.
-        2. **Confusion** or trouble speaking and understanding speech.
-        3. **Vision problems** in one or both eyes.
-        4. **Dizziness, trouble walking, or loss of balance and coordination.**
-        5. **Severe headache** with no known cause.
+        - **B**alance: sudden loss of balance or coordination
+        - **E**yes: sudden vision changes in one or both eyes
+        - **F**ace: one side of the face droops or feels numb
+        - **A**rms: weakness or numbness in an arm or leg, often on one side
+        - **S**peech: slurred speech or trouble understanding
+        - **T**ime: call 911 and note when symptoms started
 
-        A simple way to remember stroke symptoms is **FAST**:
-        - **F**ace drooping – One side of the face may droop or feel numb.
-        - **A**rm weakness – One arm may feel weak or drift downward.
-        - **S**peech difficulty – Speech may be slurred or hard to understand.
-        - **T**ime to call emergency services – Immediate medical attention is needed.
-
-        If you notice any of these symptoms, seek emergency help right away!
+        A sudden, severe headache with no known cause can also be a sign. Call 911 even if the symptoms go away.
         """,
         "How can I prevent a stroke?": """
-        You can reduce your risk of stroke by making healthy lifestyle choices and managing medical conditions. Here are key steps to prevent stroke:
+        Many strokes can be prevented by managing risk factors:
 
-        1. **Control Blood Pressure** – High blood pressure is a major stroke risk. Keep your numbers in a healthy range.
-        2. **Manage Diabetes** – Keep blood sugar levels under control.
-        3. **Quit Smoking** – Smoking damages blood vessels and increases clot formation.
-        4. **Exercise Regularly** – Aim for at least 30 minutes of moderate activity most days of the week.
-        5. **Eat a Healthy Diet** – Choose more fruits, vegetables, whole grains, and lean proteins. Limit salt, unhealthy fats, and processed foods.
-        6. **Maintain a Healthy Weight** – Obesity increases stroke risk. Losing excess weight helps lower blood pressure and diabetes risk.
-        7. **Limit Alcohol** – Drinking too much alcohol can raise blood pressure and increase stroke risk.
-        8. **Control Cholesterol** – High cholesterol can lead to clogged arteries. Choose heart-healthy foods and medications if needed.
-        9. **Treat Atrial Fibrillation (AFib)** – This irregular heart rhythm can cause blood clots that lead to stroke. Get treatment if diagnosed.
-        10. **Manage Stress** – Chronic stress can contribute to high blood pressure and unhealthy habits.
+        1. **Control blood pressure**, the leading treatable cause of stroke.
+        2. **Manage diabetes** and blood sugar.
+        3. **Quit smoking** and avoid tobacco.
+        4. **Stay active**: aim for about 30 minutes of moderate activity most days.
+        5. **Eat a heart-healthy diet** with less salt and fewer processed foods.
+        6. **Keep a healthy weight.**
+        7. **Limit alcohol.**
+        8. **Manage cholesterol.**
+        9. **Get atrial fibrillation (AFib) treated** if you have it.
 
-        If you have a high risk of stroke, your doctor may recommend medications like blood thinners or cholesterol-lowering drugs. Regular check-ups can help identify and manage risk factors early.
+        Your doctor can help you understand your own risk and whether medication would help.
         """
     ]
 
-    var body: some View {
-        NavigationView {
-            VStack {
-                ScrollViewReader { scrollProxy in
-                    ScrollView {
-                        VStack(spacing: 8) {
-                            ForEach(messages.filter { $0.role != "system" }) { message in
-                                ChatRow(message: message)
-                                    .id(message.id)
-                            }
-                        }
-                        .padding(.top)
-                    }
-                    .onChange(of: messages.count) { _,_ in
-                        if let lastMessage = messages.last {
-                            scrollProxy.scrollTo(lastMessage.id, anchor: .bottom)
-                        }
-                    }
-                }
+    func ask(_ text: String) {
+        let question = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !question.isEmpty, !isLoading else { return }
 
-                if isLoading {
-                    ProgressView()
-                        .padding()
-                }
+        errorMessage = nil
+        messages.append(ChatMessage(role: "user", content: question))
 
-                HStack {
-                    Spacer()
-                    VStack(alignment: .trailing) {
-                        ForEach(frequentlyAsked.keys.sorted(), id: \.self) { question in
-                            Button(action: {
-                                let response = frequentlyAsked[question] ?? ""
-                                let userMessage = ChatMessage(role: "user", content: question)
-                                let assistantMessage = ChatMessage(role: "assistant", content: response)
-                                messages.append(userMessage)
-                                messages.append(assistantMessage)
-                            }) {
-                                Text(question)
-                                    .padding(8)
-                                    .background(Color.blue)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-
-                HStack {
-                    TextField("Ask your question...", text: $inputText)
-                        .padding(12)
-                        .background(Color(white: 0.95))
-                        .cornerRadius(20)
-                        .padding(.leading, 16)
-
-                    Button(action: {
-                        sendMessage()
-                    }) {
-                        Text("Send")
-                            .foregroundColor(.white)
-                            .padding(.vertical, 12)
-                            .padding(.horizontal, 20)
-                            .background(Color.blue)
-                            .cornerRadius(20)
-                    }
-                    .disabled(inputText.trimmingCharacters(in: .whitespaces).isEmpty || isLoading)
-                    .padding(.trailing, 16)
-                }
-                .padding(.vertical, 8)
-                .background(Color(white: 0.98))
-                Text("Responses are AI generated. They are not a substitute for professional medical advice. Consult with qualified healthcare providers for medical decisions. Questions are processed by OpenAI and may be used to improve their models, so avoid sharing personal details.")
-                    .multilineTextAlignment(.center)
-                    .font(.footnote)
-                    .padding(.horizontal)
-                    .foregroundStyle(.secondary)
-            }
-            .navigationTitle("AI Stroke Expert")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    NavigationLink {
-                        NavigationTabView(saveAction: {})
-                            .environmentObject(store)
-                            .environmentObject(favoritesManager)
-                            .navigationBarBackButtonHidden()
-                    } label: {
-                        Image(systemName: "chevron.backward")
-                            .foregroundColor(.black)
-                            .padding()
-                            .frame(width: 40, height: 40)
-                            .background(Color.gray.opacity(0.2))
-                            .clipShape(Circle())
-                            .padding()
-                    }
-                }
-                
-            }
-            .alert(isPresented: $showAlert) {
-                Alert(title: Text("Stroke Expert Unavailable"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
-            }
+        if let answer = Self.cannedAnswers[question] {
+            messages.append(ChatMessage(role: "assistant", content: answer))
+        } else {
+            requestAnswer()
         }
     }
 
-    func sendMessage() {
-        let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty, !isLoading else { return }
+    func retry() {
+        guard messages.last?.role == "user", !isLoading else { return }
+        errorMessage = nil
+        requestAnswer()
+    }
 
-        let userMessage = ChatMessage(role: "user", content: text)
-        messages.append(userMessage)
-        inputText = ""
+    func startOver() {
+        guard !isLoading else { return }
+        messages.removeAll()
+        errorMessage = nil
+    }
 
-        let chatHistory = messages
-            .filter { $0.role == "user" || $0.role == "assistant" }
-            .map { Message(role: $0.role, content: $0.content) }
-
+    private func requestAnswer() {
+        let history = messages.map { Message(role: $0.role, content: $0.content) }
         isLoading = true
 
         Task {
             do {
-                let response = try await openAIClient.sendMessage(messages: chatHistory)
-                let chatResponse = ChatMessage(role: response.role, content: response.content)
-                await MainActor.run {
-                    messages.append(chatResponse)
-                    isLoading = false
-                }
+                let reply = try await client.sendMessage(messages: history)
+                messages.append(ChatMessage(role: "assistant", content: reply.content))
             } catch {
                 print("Error: \(error)")
-                await MainActor.run {
-                    isLoading = false
-                    alertMessage = error.localizedDescription
-                    showAlert = true
-                }
+                errorMessage = error.localizedDescription
             }
+            isLoading = false
         }
     }
 }
 
+struct ChatView: View {
+    @EnvironmentObject private var session: ChatSession
+    @State private var inputText = ""
+    @FocusState private var inputFocused: Bool
+
+    private let bottomID = "bottom"
+
+    var body: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                if session.messages.isEmpty {
+                    ChatIntro { session.ask($0) }
+                        .padding(.horizontal, Spacing.l)
+                        .padding(.top, Spacing.xl)
+                } else {
+                    LazyVStack(alignment: .leading, spacing: Spacing.l) {
+                        ForEach(session.messages) { message in
+                            ChatRow(message: message)
+                        }
+                        if session.isLoading {
+                            TypingIndicatorRow()
+                        }
+                        if let error = session.errorMessage {
+                            ChatErrorRow(message: error) { session.retry() }
+                        }
+                        Color.clear.frame(height: 1).id(bottomID)
+                    }
+                    .padding(.horizontal, Spacing.l)
+                    .padding(.vertical, Spacing.m)
+                }
+            }
+            .scrollDismissesKeyboard(.interactively)
+            .defaultScrollAnchor(session.messages.isEmpty ? .top : .bottom)
+            .onChange(of: session.messages.count) { _, _ in scrollToBottom(proxy) }
+            .onChange(of: session.isLoading) { _, _ in scrollToBottom(proxy) }
+        }
+        .safeAreaInset(edge: .bottom) {
+            ChatInputBar(text: $inputText, isFocused: $inputFocused, isLoading: session.isLoading) {
+                session.ask(inputText)
+                inputText = ""
+            }
+        }
+        .background(.surface)
+        .navigationTitle("Stroke Expert")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if !session.messages.isEmpty {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("New Conversation", systemImage: "square.and.pencil") {
+                        session.startOver()
+                    }
+                    .disabled(session.isLoading)
+                }
+            }
+        }
+        .sensoryFeedback(.impact(weight: .light), trigger: session.messages.filter { $0.role == "user" }.count)
+    }
+
+    private func scrollToBottom(_ proxy: ScrollViewProxy) {
+        withAnimation(.snappy) {
+            proxy.scrollTo(bottomID, anchor: .bottom)
+        }
+    }
+}
+
+/// Empty state with suggested questions.
+private struct ChatIntro: View {
+    let onSelect: (String) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.m) {
+            Image(systemName: "bubble.left.and.text.bubble.right.fill")
+                .font(.largeTitle.weight(.semibold))
+                .imageScale(.large)
+                .symbolRenderingMode(.monochrome)
+                .foregroundStyle(.tint)
+                .accessibilityHidden(true)
+            Text("Ask anything about stroke")
+                .font(.heroTitle)
+                .foregroundStyle(.ink)
+            Text("Plain-language answers about symptoms, risk factors, treatment and recovery.")
+                .font(.body)
+                .foregroundStyle(.inkMuted)
+
+            VStack(spacing: 0) {
+                ForEach(Array(ChatSession.suggestions.enumerated()), id: \.element) { index, question in
+                    Button {
+                        onSelect(question)
+                    } label: {
+                        HStack {
+                            Text(question)
+                                .font(.body)
+                                .foregroundStyle(.ink)
+                                .multilineTextAlignment(.leading)
+                            Spacer()
+                            Image(systemName: "arrow.up.right")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.tint)
+                        }
+                        .padding(Spacing.m)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    if index < ChatSession.suggestions.count - 1 {
+                        Rectangle().fill(.hairline).frame(height: 0.5).padding(.leading, Spacing.m)
+                    }
+                }
+            }
+            .cardStyle()
+            .padding(.top, Spacing.s)
+        }
+    }
+}
+
+/// Floating input field. Liquid Glass on iOS 26.
+private struct ChatInputBar: View {
+    @Binding var text: String
+    var isFocused: FocusState<Bool>.Binding
+    let isLoading: Bool
+    let onSend: () -> Void
+
+    private var canSend: Bool {
+        !isLoading && !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var body: some View {
+        VStack(spacing: Spacing.xs) {
+            HStack(alignment: .bottom, spacing: Spacing.xs) {
+                TextField("Ask about stroke", text: $text, axis: .vertical)
+                    .lineLimit(1...5)
+                    .focused(isFocused)
+                    .submitLabel(.send)
+                    .onSubmit { if canSend { onSend() } }
+                    .padding(.leading, Spacing.m)
+                    .padding(.vertical, 12)
+
+                Button(action: onSend) {
+                    Image(systemName: "arrow.up.circle.fill")
+                        .font(.title)
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(.white, canSend ? AnyShapeStyle(.brandPrimary) : AnyShapeStyle(.inkMuted.opacity(0.4)))
+                }
+                .disabled(!canSend)
+                .padding(5)
+                .accessibilityLabel("Send")
+            }
+            .floatingGlass(in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+
+            Text("AI answers can be wrong and aren't medical advice. Questions are processed by OpenAI and may be used to improve their models.")
+                .font(.caption2)
+                .foregroundStyle(.inkMuted)
+                .multilineTextAlignment(.center)
+        }
+        .padding(.horizontal, Spacing.m)
+        .padding(.bottom, Spacing.xs)
+    }
+}
+
+private struct TypingIndicatorRow: View {
+    var body: some View {
+        HStack(spacing: Spacing.s) {
+            ExpertMark()
+            Image(systemName: "ellipsis")
+                .font(.title2.weight(.bold))
+                .foregroundStyle(.inkMuted)
+                .symbolEffect(.variableColor.iterative.dimInactiveLayers, options: .repeating)
+        }
+        .accessibilityElement()
+        .accessibilityLabel("The Stroke Expert is answering")
+    }
+}
+
+private struct ChatErrorRow: View {
+    let message: String
+    let onRetry: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: Spacing.s) {
+            Image(systemName: "exclamationmark.circle.fill")
+                .foregroundStyle(.emergency)
+                .font(.title3)
+            VStack(alignment: .leading, spacing: Spacing.xs) {
+                Text("Couldn't get an answer")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.ink)
+                Text(message)
+                    .font(.footnote)
+                    .foregroundStyle(.inkMuted)
+                Button("Try Again", action: onRetry)
+                    .font(.subheadline.weight(.semibold))
+                    .tint(.accentColor)
+            }
+        }
+        .padding(Spacing.m)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cardStyle(radius: Radius.control)
+    }
+}
+
 #Preview {
-    ChatView()
-        .environmentObject(UserStore())
-        .environmentObject(FavoritesManager())
+    NavigationStack {
+        ChatView()
+    }
+    .environmentObject(ChatSession())
 }

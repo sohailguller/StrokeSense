@@ -40,24 +40,24 @@ struct StrokeSenseApp: App {
     @StateObject private var favoritesManager = FavoritesManager()
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                NavigationTabView() {
-                    Task {
-                        do {
-                            try await store.save(user: store.user)
-                        } catch {
-                            fatalError(error.localizedDescription)
-                        }
+            NavigationTabView {
+                Task {
+                    do {
+                        try await store.save(user: store.user)
+                    } catch {
+                        print("Couldn't save profile: \(error)")
                     }
                 }
-                .environmentObject(store)
-                .environmentObject(favoritesManager)
-                .task {
-                    do {
-                        try await store.load()
-                    } catch {
-                        fatalError(error.localizedDescription)
-                    }
+            }
+            // One type family across the app: SF Pro Rounded (see DesignSystem/Theme.swift).
+            .fontDesign(.rounded)
+            .environmentObject(store)
+            .environmentObject(favoritesManager)
+            .task {
+                do {
+                    try await store.load()
+                } catch {
+                    print("Couldn't load profile: \(error)")
                 }
             }
         }

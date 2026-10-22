@@ -7,51 +7,62 @@
 
 import SwiftUI
 
+enum AppTab: Hashable {
+    case today, learn, ask, saved
+}
+
+/// Lets any screen switch tabs, e.g. a suggestion chip on Today opening Ask.
+final class AppRouter: ObservableObject {
+    @Published var selectedTab: AppTab = .today
+}
+
 struct NavigationTabView: View {
     @EnvironmentObject var store: UserStore
     @EnvironmentObject var favoritesManager: FavoritesManager
     @Environment(\.scenePhase) private var scenePhase
-    let saveAction: ()->Void
+    @StateObject private var router = AppRouter()
+    @StateObject private var chatSession = ChatSession()
+    let saveAction: () -> Void
+
     var body: some View {
-        TabView {
-            Tab("", systemImage: "house") {
-                HomeView()
-                    .environmentObject(store)
-
+        TabView(selection: $router.selectedTab) {
+            Tab("Today", systemImage: "sun.horizon", value: .today) {
+                NavigationStack { HomeView() }
             }
-            
-            Tab("", systemImage: "heart") {
-                FavoritesView()
-                    .navigationTitle("Favorites")
-                    .environmentObject(favoritesManager)
-                
-            }
-            
-            Tab("", systemImage: "brain.head.profile") {
-                ChatView()
-                    .environmentObject(store)
 
+            Tab("Learn", systemImage: "book.pages", value: .learn) {
+                NavigationStack { EducationView() }
             }
-            
-            Tab("", systemImage: "person.crop.circle") {
-                ProfileView()
-                    .environmentObject(store)
 
+            Tab("Ask", systemImage: "bubble.left.and.text.bubble.right", value: .ask) {
+                NavigationStack { ChatView() }
+            }
+
+            Tab("Saved", systemImage: "heart", value: .saved) {
+                NavigationStack { FavoritesView() }
             }
         }
-        
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .onChange(of: scenePhase) { phase, _ in
+        .modifier(TabBarMinimizeOnScroll())
+        .environmentObject(router)
+        .environmentObject(chatSession)
+        .onChange(of: scenePhase) { _, phase in
             if phase == .inactive { saveAction() }
         }
     }
 }
 
+private struct TabBarMinimizeOnScroll: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.tabBarMinimizeBehavior(.onScrollDown)
+        } else {
+            content
+        }
+    }
+}
 
 #Preview {
-    NavigationStack {
-        NavigationTabView(saveAction: {})
-            .environmentObject(UserStore())
-            .environmentObject(FavoritesManager())
-    }
+    NavigationTabView(saveAction: {})
+        .environmentObject(UserStore())
+        .environmentObject(FavoritesManager())
 }

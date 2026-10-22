@@ -6,6 +6,7 @@
 //
 import Foundation
 
+/// Saved videos, keyed by YouTube video ID with the video title as the value.
 class FavoritesManager: ObservableObject {
     @Published var favorites: [String: String] = [:]
 
@@ -13,13 +14,32 @@ class FavoritesManager: ObservableObject {
         loadFavorites()
     }
 
-    func addFavorite(sound: String, episode: String) {
-        favorites[sound] = episode
+    /// Saved videos, sorted by title.
+    var savedVideos: [Video] {
+        favorites
+            .map { Video(name: $0.value, videoID: $0.key) }
+            .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+    }
+
+    func isFavorite(_ videoID: String) -> Bool {
+        favorites[videoID] != nil
+    }
+
+    func toggle(videoID: String, title: String) {
+        if isFavorite(videoID) {
+            removeFavorite(videoID: videoID)
+        } else {
+            addFavorite(videoID: videoID, title: title)
+        }
+    }
+
+    func addFavorite(videoID: String, title: String) {
+        favorites[videoID] = title
         saveFavorites()
     }
 
-    func removeFavorite(sound: String) {
-        favorites.removeValue(forKey: sound)
+    func removeFavorite(videoID: String) {
+        favorites.removeValue(forKey: videoID)
         saveFavorites()
     }
 

@@ -12,7 +12,7 @@ class User: ObservableObject, Codable {
     var username: String = ""
     var favorites: [Video] = []
     
-    static let `default` = User(id: "0000", profilePicture: UIImage(systemName: "person.crop.circle.fill") ?? UIImage(), username: "user", favorites: [])
+    static let `default` = User(id: "0000", profilePicture: UIImage(systemName: "person.crop.circle.fill") ?? UIImage(), username: "", favorites: [])
     
     init(id: String, profilePicture: UIImage, username: String, favorites: [Video]) {
         self.id = id
@@ -31,8 +31,11 @@ class User: ObservableObject, Codable {
         username = try container.decode(String.self, forKey: .username)
         favorites = try container.decode([Video].self, forKey: .favorites)
 
-        if let imageData = try? container.decode(Data.self, forKey: .profilePicture) {
-            profilePicture = UIImage(data: imageData) ?? UIImage(systemName: "person.crop.circle.fill") ?? UIImage()
+        // Earlier builds saved the placeholder symbol as a small image and "user" as the name.
+        if username == "user" { username = "" }
+        if let imageData = try? container.decode(Data.self, forKey: .profilePicture),
+           let image = UIImage(data: imageData), image.size.width * image.scale >= 100 {
+            profilePicture = image
         } else {
             profilePicture = UIImage(systemName: "person.crop.circle.fill") ?? UIImage()
         }
@@ -44,7 +47,8 @@ class User: ObservableObject, Codable {
         try container.encode(username, forKey: .username)
         try container.encode(favorites, forKey: .favorites)
 
-        if let imageData = profilePicture.pngData() {
+        // The default placeholder is an SF Symbol; only real photos are stored.
+        if !profilePicture.isSymbolImage, let imageData = profilePicture.jpegData(compressionQuality: 0.85) {
             try container.encode(imageData, forKey: .profilePicture)
         }
     }

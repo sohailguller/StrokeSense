@@ -7,18 +7,27 @@
 import SwiftUI
 import FirebaseFirestore
 
-struct Video: Codable {
+struct Video: Codable, Hashable, Identifiable {
     let name: String
     let videoID: String
+
+    var id: String { videoID }
 }
 
 class VideoViewModel: ObservableObject {
     @Published var videos: [Video] = []
+    @Published var isLoading = false
+    private var hasLoaded = false
     
     private var db = Firestore.firestore()
     
-    func fetchVideos() {
+    /// Loads once; pass `force` to reload (pull to refresh).
+    func fetchVideos(force: Bool = false) {
+        guard force || !hasLoaded else { return }
+        hasLoaded = true
+        isLoading = true
         db.collection("videos").getDocuments { querySnapshot, error in
+            DispatchQueue.main.async { self.isLoading = false }
             if let error = error {
                 print("Error getting videos: \(error)")
                 return

@@ -6,66 +6,62 @@
 //
 
 import SwiftUI
-import SwiftSoup
 
- // For use with interent connection
 struct NewsView: View {
-    @StateObject var viewModel = NewsViewModel()
+    @ObservedObject var viewModel: NewsViewModel
 
     var body: some View {
-        NavigationStack {
-            List(viewModel.newsArticles) { article in
-                Button(action: {
-                    if let url = URL(string: article.url) {
-                        UIApplication.shared.open(url)
-                    }
-                }) {
-                    VStack(alignment: .leading) {
-                        Text(article.title)
-                            .font(.headline)
-                        Text(article.description)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                    }
-                }
-            }
-            .onAppear {
-                viewModel.fetchArticles()
-            }
+        ArticleListView(title: "News", articles: viewModel.newsArticles) {
+            viewModel.fetchArticles(force: true)
         }
+        .onAppear { viewModel.fetchArticles() }
     }
 }
 
-
-// For use without internet connection
-/*
-struct NewsView: View {
-    @StateObject var viewModel = NewsViewModel()
+struct ResourcesView: View {
+    @ObservedObject var viewModel: NewsViewModel
 
     var body: some View {
-        NavigationStack {
-            List(viewModel.articles) { article in
-                NavigationLink(destination: SummaryView(article: article)
-                    .navigationTitle("Summary")
-                    .navigationBarTitleDisplayMode(.large)
-                ) {
-                    VStack(alignment: .leading) {
-                        Text(article.headline)
-                            .font(.headline)
-                        Text(article.summary)
-                            .lineLimit(3)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                    }
-                }
-            }
+        ArticleListView(title: "Resources", articles: viewModel.staticArticles) {
+            viewModel.fetchArticles(force: true)
         }
+        .onAppear { viewModel.fetchArticles() }
     }
 }
 
-*/
+/// Article list that opens each link in an in-app Safari sheet.
+private struct ArticleListView: View {
+    let title: String
+    let articles: [NewsArticle]
+    let onRefresh: () -> Void
+    @State private var openArticle: URL?
 
+    var body: some View {
+        List(articles) { article in
+            Button {
+                openArticle = URL(string: article.url)
+            } label: {
+                ArticleRow(article: article)
+                    .padding(.vertical, Spacing.xxs)
+            }
+            .buttonStyle(.plain)
+        }
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(.surface)
+        .overlay {
+            if articles.isEmpty {
+                ProgressView()
+            }
+        }
+        .navigationTitle(title)
+        .refreshable { onRefresh() }
+        .safariSheet(url: $openArticle)
+    }
+}
 
 #Preview {
-    NewsView()
+    NavigationStack {
+        NewsView(viewModel: NewsViewModel())
+    }
 }

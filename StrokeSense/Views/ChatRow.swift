@@ -1,6 +1,6 @@
 //
 //  ChatRow.swift
-//  AIChatBot
+//  StrokeSense
 //
 //  Created by Sohail Guller on 2/21/25.
 //
@@ -10,40 +10,45 @@ import MarkdownUI
 
 struct ChatRow: View {
     let message: ChatMessage
-    
+
     var body: some View {
-        HStack(alignment: .top) {
-            if message.role == "assistant" || message.role == "system" {
-                Image(systemName: "person.fill")
-                    .foregroundColor(.gray)
-                    .padding(.top, 4)
-   
-                Markdown(message.content)
-                    .padding(12)
-                    .background(Color(white: 0.95))
-                    .foregroundColor(.primary)
-                    .cornerRadius(16)
-                    .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
-                
-                Spacer()
-            } else {
-                Spacer()
+        if message.role == "user" {
+            HStack {
+                Spacer(minLength: 56)
                 Text(message.content)
-                    .padding(12)
-                    .background(Color.blue.opacity(0.7))
-                    .foregroundColor(.white)
-                    .cornerRadius(16)
-                    .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
-                Image(systemName: "person.fill")
-                    .foregroundColor(.blue)
-                    .padding(.top, 4)
+                    .font(.body)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(.brandPrimary, in: RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+                    .textSelection(.enabled)
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("You: \(message.content)")
+        } else {
+            HStack(alignment: .top, spacing: Spacing.s) {
+                ExpertMark()
+                    .padding(.top, 2)
+                Markdown(message.content)
+                    .markdownTextStyle(\.text) {
+                        FontFamily(.system(.rounded))
+                        ForegroundColor(.ink)
+                    }
+                    .markdownTextStyle(\.strong) {
+                        FontWeight(.semibold)
+                    }
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .accessibilityElement(children: .combine)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 4)
     }
 }
 
 #Preview {
-    ChatRow(message: ChatMessage(role: "user", content: "What is a stroke"))
+    VStack(spacing: 20) {
+        ChatRow(message: ChatMessage(role: "user", content: "What is a stroke?"))
+        ChatRow(message: ChatMessage(role: "assistant", content: "A **stroke** happens when blood flow to the brain is blocked."))
+    }
+    .padding()
 }
