@@ -1,0 +1,11 @@
+name = "strokesense-chat"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+# Public identifiers from GoogleService-Info.plist, used to verify App Check tokens.
+[vars]
+FIREBASE_PROJECT_NUMBER = "532890335868"
+FIREBASE_APP_ID = "1:532890335868:ios:b61eeccaeed22eebcf67f9"
+
+# The OpenAI key is a secret, never stored in this file:
+#   npx wrangler secret put OPENAI_API_KEY

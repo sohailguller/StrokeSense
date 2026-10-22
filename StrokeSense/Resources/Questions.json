@@ -1,0 +1,244 @@
+[
+    {
+        "question": "What is the primary cause of a stroke?",
+        "choices": ["High blood pressure", "Diabetes", "Obesity", "Smoking"],
+        "correct_answer": "High blood pressure"
+    },
+    {
+        "question": "What type of stroke occurs when a blood clot blocks a blood vessel in the brain?",
+        "choices": ["Hemorrhagic", "Ischemic", "Transient Ischemic Attack", "Embolic"],
+        "correct_answer": "Ischemic"
+    },
+    {
+        "question": "Which of the following is a symptom of a stroke?",
+        "choices": ["Fever", "Chest pain", "Sudden numbness", "Coughing"],
+        "correct_answer": "Sudden numbness"
+    },
+    {
+        "question": "What is a TIA?",
+        "choices": ["Toxic Ischemic Attack", "Transient Ischemic Attack", "Total Ischemic Arrest", "Temporary Ischemic Action"],
+        "correct_answer": "Transient Ischemic Attack"
+    },
+    {
+        "question": "Which medical condition is a major risk factor for stroke?",
+        "choices": ["Asthma", "Hypertension", "Arthritis", "Gastroenteritis"],
+        "correct_answer": "Hypertension"
+    },
+    {
+        "question": "What part of the brain is affected by a stroke?",
+        "choices": ["Brainstem", "Limbic system", "Cerebrum", "Cerebellum"],
+        "correct_answer": "Cerebrum"
+    },
+    {
+        "question": "What is the primary method for diagnosing a stroke?",
+        "choices": ["MRI", "CT scan", "X-ray", "Ultrasound"],
+        "correct_answer": "CT scan"
+    },
+    {
+        "question": "What does the 'S' in FAST stand for?",
+        "choices": ["Speech", "Sight", "Swelling", "Seizures"],
+        "correct_answer": "Speech"
+    },
+    {
+        "question": "What lifestyle factor contributes to a lower risk of stroke?",
+        "choices": ["High salt diet", "Regular physical activity", "Smoking", "Heavy alcohol use"],
+        "correct_answer": "Regular physical activity"
+    },
+    {
+        "question": "Which condition involves the temporary disruption of blood flow to the brain?",
+        "choices": ["Heart attack", "Transient Ischemic Attack", "Epilepsy", "Aneurysm"],
+        "correct_answer": "Transient Ischemic Attack"
+    },
+    {
+        "question": "Which food choice helps reduce the risk of stroke?",
+        "choices": ["High-fat foods", "Salty snacks", "Fruits and vegetables", "Sugary drinks"],
+        "correct_answer": "Fruits and vegetables"
+    },
+    {
+        "question": "What is the most common type of stroke?",
+        "choices": ["Ischemic", "Hemorrhagic", "TIA", "Aneurysm"],
+        "correct_answer": "Ischemic"
+    },
+    {
+        "question": "Which of these habits can help prevent strokes?",
+        "choices": ["Excessive drinking", "Regular exercise", "Smoking", "Skipping meals"],
+        "correct_answer": "Regular exercise"
+    },
+    {
+        "question": "What is a major modifiable risk factor for stroke?",
+        "choices": ["Genetics", "Age", "Diet", "Gender"],
+        "correct_answer": "Diet"
+    },
+    {
+        "question": "Which symptom is not typically associated with a stroke?",
+        "choices": ["Sudden confusion", "Severe headache", "Sudden numbness", "Fever"],
+        "correct_answer": "Fever"
+    },
+    {
+        "question": "Which of these can be a warning sign of a stroke?",
+        "choices": ["Gradual vision loss", "Sudden trouble speaking", "Frequent urination", "Persistent cough"],
+        "correct_answer": "Sudden trouble speaking"
+    },
+    {
+        "question": "What is a stroke?",
+        "choices": ["Heart failure", "Brain attack", "Lung collapse", "Kidney failure"],
+        "correct_answer": "Brain attack"
+    },
+    {
+        "question": "What lifestyle change can significantly reduce stroke risk?",
+        "choices": ["Smoking", "High-fat diet", "Regular exercise", "Stressful job"],
+        "correct_answer": "Regular exercise"
+    },
+    {
+        "question": "Which type of stroke is caused by bleeding in the brain?",
+        "choices": ["Ischemic", "Hemorrhagic", "TIA", "Cardiogenic"],
+        "correct_answer": "Hemorrhagic"
+    },
+    {
+        "question": "What does the acronym FAST stand for in stroke recognition?",
+        "choices": ["Feet, Arms, Speech, Time", "Face, Arms, Speech, Time", "Face, Activity, Speech, Time", "Feet, Activity, Speech, Time"],
+        "correct_answer": "Face, Arms, Speech, Time"
+    },
+    {
+        "question": "Which of these can be a long-term effect of a stroke?",
+        "choices": ["Improved memory", "Increased physical strength", "Cognitive impairments", "Enhanced vision"],
+        "correct_answer": "Cognitive impairments"
+    },
+    {
+        "question": "What is the main treatment goal during an ischemic stroke?",
+        "choices": ["Reduce swelling", "Stop bleeding", "Restore blood flow", "Reduce fever"],
+        "correct_answer": "Restore blood flow"
+    },
+    {
+        "question": "Which lifestyle factor is a major risk for stroke?",
+        "choices": ["Regular exercise", "Smoking", "Balanced diet", "Adequate sleep"],
+        "correct_answer": "Smoking"
+    },
+    {
+        "question": "Which of the following is NOT a type of stroke?",
+        "choices": ["Ischemic", "Hemorrhagic", "Embolic", "Cardiogenic"],
+        "correct_answer": "Cardiogenic"
+    },
+    {
+        "question": "What does a TIA stand for?",
+        "choices": ["Transient Ischemic Attack", "Total Ischemic Arrest", "Temporary Ischemic Action", "Toxic Ischemic Attack"],
+        "correct_answer": "Transient Ischemic Attack"
+    },
+    {
+        "question": "What can be done to reduce the risk of stroke?",
+        "choices": ["Increase salt intake", "Regular exercise", "Smoking", "High-fat diet"],
+        "correct_answer": "Regular exercise"
+    },
+    {
+        "question": "What part of the body is directly affected by a stroke?",
+        "choices": ["Heart", "Lungs", "Brain", "Kidneys"],
+        "correct_answer": "Brain"
+    },
+    {
+        "question": "What should be done if someone shows signs of a stroke?",
+        "choices": ["Give them aspirin", "Have them lie down", "Call emergency services", "Give them water"],
+        "correct_answer": "Call emergency services"
+    },
+    {
+        "question": "Which symptom is a common sign of a stroke?",
+        "choices": ["Fever", "Chest pain", "Sudden confusion", "Coughing"],
+        "correct_answer": "Sudden confusion"
+    },
+    {
+        "question": "What is the primary goal in treating an ischemic stroke?",
+        "choices": ["Stop bleeding", "Reduce fever", "Restore blood flow", "Reduce swelling"],
+        "correct_answer": "Restore blood flow"
+    },
+    {
+        "question": "Which lifestyle change can help prevent stroke?",
+        "choices": ["Smoking more", "Reducing salt intake", "Increased alcohol consumption", "Skipping meals"],
+        "correct_answer": "Reducing salt intake"
+    },
+    {
+        "question": "Which condition is a significant risk factor for stroke?",
+        "choices": ["Asthma", "Diabetes", "Arthritis", "Gastritis"],
+        "correct_answer": "Diabetes"
+    },
+    {
+        "question": "What does the 'F' in FAST stand for?",
+        "choices": ["Feet", "Fingers", "Face", "Fainting"],
+        "correct_answer": "Face"
+    },
+    {
+        "question": "What type of diet can help reduce the risk of stroke?",
+        "choices": ["High-fat", "High-sugar", "High-fiber", "Low-protein"],
+        "correct_answer": "High-fiber"
+    },
+    {
+        "question": "What is the best immediate action if someone shows signs of a stroke?",
+        "choices": ["Give them water", "Wait for symptoms to pass", "Call emergency services", "Have them lie down"],
+        "correct_answer": "Call emergency services"
+    },
+    {
+        "question": "Which condition can be a warning sign of a stroke?",
+        "choices": ["Frequent urination", "Gradual vision loss", "Sudden trouble speaking", "Persistent cough"],
+        "correct_answer": "Sudden trouble speaking"
+    },
+    {
+        "question": "What is a major non-modifiable risk factor for stroke?",
+        "choices": ["Diet", "Age", "Exercise", "Smoking"],
+        "correct_answer": "Age"
+    },
+    {
+        "question": "Which lifestyle change can reduce the risk of stroke?",
+        "choices": ["Increased salt intake", "Regular exercise", "Smoking more", "Skipping meals"],
+        "correct_answer": "Regular exercise"
+    },
+    {
+        "question": "What does the 'A' in FAST stand for?",
+        "choices": ["Arms", "Alert", "Activity", "Agitation"],
+        "correct_answer": "Arms"
+    },
+    {
+        "question": "Which medication is commonly used to prevent strokes?",
+        "choices": ["Antibiotics", "Aspirin", "Cough syrup", "Antihistamines"],
+        "correct_answer": "Aspirin"
+    },
+    {
+        "question": "Which factor is a major risk for stroke?",
+        "choices": ["High blood pressure", "Low blood sugar", "Underweight", "High physical activity"],
+        "correct_answer": "High blood pressure"
+    },
+    {
+        "question": "Which of the following is NOT a common sign of a stroke?",
+        "choices": ["Sudden confusion", "Severe headache", "Loss of balance", "Slow heart rate"],
+        "correct_answer": "Slow heart rate"
+    },
+    {
+        "question": "What should be done if you suspect someone is having a stroke?",
+        "choices": ["Give them water", "Wait and see if they improve", "Call emergency services", "Have them lie down"],
+        "correct_answer": "Call emergency services"
+    },
+    {
+        "question": "Which factor can increase the risk of a stroke?",
+        "choices": ["Low cholesterol", "Vegetarian diet", "Excessive alcohol consumption", "Frequent exercise"],
+        "correct_answer": "Excessive alcohol consumption"
+    },
+    {
+        "question": "Which of the following is a risk factor for stroke?",
+        "choices": ["High blood pressure", "Low blood sugar", "Underweight", "High physical activity"],
+        "correct_answer": "High blood pressure"
+    },
+    {
+        "question": "What medical condition is often a precursor to stroke?",
+        "choices": ["Asthma", "Diabetes", "Arthritis", "Gastritis"],
+        "correct_answer": "Diabetes"
+    },
+    {
+        "question": "Which demographic is more likely to experience a stroke?",
+        "choices": ["Teenagers", "Adults over 55", "Children under 10", "Young adults under 30"],
+        "correct_answer": "Adults over 55"
+    },
+    {
+        "question": "What does the 'T' in FAST stand for?",
+        "choices": ["Temperature", "Time", "Tremor", "Tiredness"],
+        "correct_answer": "Time"
+    }
+]
+
+
