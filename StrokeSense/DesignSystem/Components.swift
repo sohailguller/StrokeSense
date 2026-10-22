@@ -132,35 +132,21 @@ struct ExpertMark: View {
 
 // MARK: - Emergency
 
-/// Calls 911. Liquid Glass tinted with the emergency color on iOS 26.
-struct EmergencyCallButton: View {
-    var fullWidth = true
-    @State private var tapCount = 0
+/// Region-neutral emergency guidance. Emergency numbers differ by country, so the app
+/// never dials one; it tells people to call their local number instead.
+struct EmergencyNote: View {
+    var text = "Notice any of these signs? Call your local emergency number right away."
+    var color: Color = .emergency
 
     var body: some View {
-        Link(destination: URL(string: "tel:911")!) {
-            Label("Call 911", systemImage: "phone.fill")
-                .font(.headline)
-                .frame(maxWidth: fullWidth ? .infinity : nil, minHeight: 50)
-                .padding(.horizontal, fullWidth ? 0 : Spacing.l)
+        Label {
+            Text(text)
+        } icon: {
+            Image(systemName: "phone.fill")
         }
-        .modifier(EmergencyButtonStyle())
-        .simultaneousGesture(TapGesture().onEnded { tapCount += 1 })
-        .sensoryFeedback(.impact(weight: .heavy), trigger: tapCount)
-        .accessibilityHint("Starts a phone call to emergency services")
-    }
-}
-
-private struct EmergencyButtonStyle: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
-            content
-                .buttonStyle(.glassProminent)
-                .tint(.emergency)
-        } else {
-            content
-                .buttonStyle(PrimaryButtonStyle(color: .emergency))
-        }
+        .font(.subheadline.weight(.semibold))
+        .foregroundStyle(color)
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 

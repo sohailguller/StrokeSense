@@ -8,7 +8,7 @@
 //  - AccentColor   Tint for text, links and icons on surfaces (lighter in dark mode).
 //  - BrandPrimary  Fills that carry white text: buttons, user chat bubbles, hero cards.
 //  - BrandSoft     Quiet backgrounds behind brand-tinted icons.
-//  - Emergency     Reserved for 911 and BE FAST. Never decorative.
+//  - Emergency     Reserved for emergency guidance and BE FAST. Never decorative.
 //  - Success       Correct quiz answers.
 //  - Ink / InkMuted  Primary and secondary text.
 //  - Surface / Card / Hairline  Screen background, raised content, 0.5pt borders.
@@ -54,6 +54,10 @@ extension Font {
     static let letterMark = Font.largeTitle.weight(.black)
     /// Numbers such as scores and counts.
     static let statNumber = Font.system(.largeTitle, design: .rounded, weight: .heavy).monospacedDigit()
+    /// Illustrative symbols. Pass a size from `@ScaledMetric` so it follows Dynamic Type.
+    static func illustration(size: CGFloat) -> Font {
+        .system(size: size, weight: .semibold, design: .rounded)
+    }
 }
 
 extension View {

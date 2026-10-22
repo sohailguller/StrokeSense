@@ -8,12 +8,12 @@
 import SwiftUI
 
 enum AppTab: Hashable {
-    case today, learn, ask, saved
+    case home, learn, ask, saved
 }
 
 /// Lets any screen switch tabs, e.g. a suggestion chip on Today opening Ask.
 final class AppRouter: ObservableObject {
-    @Published var selectedTab: AppTab = .today
+    @Published var selectedTab: AppTab = .home
 }
 
 struct NavigationTabView: View {
@@ -26,7 +26,7 @@ struct NavigationTabView: View {
 
     var body: some View {
         TabView(selection: $router.selectedTab) {
-            Tab("Today", systemImage: "sun.horizon", value: .today) {
+            Tab("Home", systemImage: "house", value: .home) {
                 NavigationStack { HomeView() }
             }
 

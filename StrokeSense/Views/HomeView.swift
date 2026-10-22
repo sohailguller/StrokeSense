@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// The Today tab: emergency signs first, then the expert, videos, quiz and reading.
+/// The Home tab: stroke signs first, then the expert, videos, quiz and reading.
 struct HomeView: View {
     @EnvironmentObject private var store: UserStore
     @StateObject private var videoVM = VideoViewModel()
@@ -22,8 +22,6 @@ struct HomeView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.xxl) {
-                DateEyebrowFallback()
-
                 BeFastHeroCard()
                     .matchedTransitionSource(id: "befast", in: transition)
 
@@ -54,8 +52,7 @@ struct HomeView: View {
             .frame(maxWidth: .infinity)
         }
         .background(.surface)
-        .navigationTitle("Today")
-        .modifier(DateSubtitle())
+        .navigationTitle("StrokeSense")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -105,85 +102,125 @@ struct HomeView: View {
     }
 }
 
-// MARK: - Date
-
-private let todayDate = Date.now.formatted(.dateTime.weekday(.wide).month(.wide).day())
-
-/// iOS 26 shows the date under the large title.
-private struct DateSubtitle: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
-            content.navigationSubtitle(todayDate)
-        } else {
-            content
-        }
-    }
-}
-
-/// Earlier versions show the date at the top of the content instead.
-private struct DateEyebrowFallback: View {
-    var body: some View {
-        if #available(iOS 26.0, *) {
-            EmptyView()
-        } else {
-            Text(todayDate).kicker()
-        }
-    }
-}
-
 // MARK: - Cards
 
-/// Emergency signs, styled as the most prominent card on the screen.
+/// The signs of stroke, cycling one at a time like a flash card. Tapping a letter jumps to it.
 private struct BeFastHeroCard: View {
-    private let letters = ["B", "E", "F", "A", "S", "T"]
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    private struct Sign {
+        let letter: String
+        let name: String
+        let prompt: String
+        let systemImage: String
+    }
 
-    /// Side by side normally; stacked at accessibility text sizes so labels never truncate.
-    private var buttonLayout: AnyLayout {
+    private let signs = [
+        Sign(letter: "B", name: "Balance", prompt: "Sudden dizziness or loss of balance", systemImage: "figure.fall"),
+        Sign(letter: "E", name: "Eyes", prompt: "Sudden trouble seeing in one or both eyes", systemImage: "eye.fill"),
+        Sign(letter: "F", name: "Face", prompt: "Ask them to smile. Does one side droop?", systemImage: "face.smiling"),
+        Sign(letter: "A", name: "Arms", prompt: "Ask them to raise both arms. Does one drift down?", systemImage: "figure.arms.open"),
+        Sign(letter: "S", name: "Speech", prompt: "Is their speech slurred or strange?", systemImage: "mouth.fill"),
+        Sign(letter: "T", name: "Time", prompt: "Call your local emergency number right away", systemImage: "clock.fill")
+    ]
+
+    @State private var index = 0
+    @State private var taps = 0
+    @Namespace private var indicator
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @ScaledMetric(relativeTo: .largeTitle) private var symbolSize: CGFloat = 64
+
+    private var sign: Sign { signs[index] }
+
+    /// Symbol beside the text normally; stacked at accessibility text sizes.
+    private var signLayout: AnyLayout {
         dynamicTypeSize.isAccessibilitySize
-            ? AnyLayout(VStackLayout(spacing: Spacing.s))
-            : AnyLayout(HStackLayout(spacing: Spacing.s))
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: Spacing.m))
+            : AnyLayout(HStackLayout(spacing: Spacing.l))
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.m) {
-            Label("Know the signs of stroke", systemImage: "bolt.heart.fill")
+        VStack(alignment: .leading, spacing: Spacing.l) {
+            Text("Know the signs of stroke")
                 .kicker(.white.opacity(0.9))
-                .symbolEffect(.breathe, options: .repeat(3))
+
+            signLayout {
+                Image(systemName: sign.systemImage)
+                    .font(.illustration(size: symbolSize))
+                    .foregroundStyle(.white)
+                    .contentTransition(.symbolEffect(.replace.downUp))
+                    .symbolEffect(.bounce, value: index)
+                    .frame(width: symbolSize * 1.25, height: symbolSize * 1.1)
+
+                // Every sign is laid out at once so the card never changes height.
+                ZStack(alignment: .leading) {
+                    ForEach(signs.indices, id: \.self) { i in
+                        VStack(alignment: .leading, spacing: Spacing.xxs) {
+                            Text(signs[i].name)
+                                .font(.cardTitle)
+                            Text(signs[i].prompt)
+                                .font(.subheadline.weight(.medium))
+                                .opacity(0.9)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .foregroundStyle(.white)
+                        .opacity(i == index ? 1 : 0)
+                        .offset(y: i == index ? 0 : 6)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .accessibilityHidden(true)
 
             HStack(spacing: 0) {
-                ForEach(letters, id: \.self) { letter in
-                    Text(letter)
-                        .font(.letterMark)
-                        .foregroundStyle(.white)
+                ForEach(signs.indices, id: \.self) { i in
+                    Button {
+                        taps += 1
+                        withAnimation(.snappy) { index = i }
+                    } label: {
+                        VStack(spacing: Spacing.xxs) {
+                            Text(signs[i].letter)
+                                .font(.letterMark)
+                                .foregroundStyle(.white.opacity(i == index ? 1 : 0.45))
+                                .scaleEffect(i == index ? 1 : 0.85)
+                            Capsule()
+                                .fill(.clear)
+                                .frame(width: 20, height: 4)
+                                .overlay {
+                                    if i == index {
+                                        Capsule()
+                                            .fill(.white)
+                                            .matchedGeometryEffect(id: "indicator", in: indicator)
+                                    }
+                                }
+                        }
                         .frame(maxWidth: .infinity)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("\(signs[i].name): \(signs[i].prompt)")
+                    .accessibilityAddTraits(i == index ? .isSelected : [])
                 }
             }
-            .accessibilityElement()
-            .accessibilityLabel("B E F A S T")
+            .sensoryFeedback(.selection, trigger: taps)
 
-            Text("Balance · Eyes · Face · Arms · Speech · Time")
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.white.opacity(0.9))
-                .frame(maxWidth: .infinity)
-                .multilineTextAlignment(.center)
-
-            buttonLayout {
-                NavigationLink(value: "befast") {
-                    Text("Learn the Signs")
-                        .font(.headline)
-                        .foregroundStyle(.brandPrimary)
-                        .frame(maxWidth: .infinity, minHeight: 50)
-                        .background(.white, in: Capsule())
-                }
-                .buttonStyle(.plain)
-
-                EmergencyCallButton()
+            NavigationLink(value: "befast") {
+                Text("Learn the Signs")
+                    .font(.headline)
+                    .foregroundStyle(.brandPrimary)
+                    .frame(maxWidth: .infinity, minHeight: 50)
+                    .background(.white, in: Capsule())
             }
-            .padding(.top, Spacing.xs)
+            .buttonStyle(.plain)
         }
         .padding(Spacing.l)
         .background(.brandPrimary, in: RoundedRectangle(cornerRadius: Radius.hero, style: .continuous))
+        // Restarts whenever the sign changes, so a tap resets the timer.
+        .task(id: index) {
+            guard !reduceMotion else { return }
+            try? await Task.sleep(for: .seconds(2.6))
+            guard !Task.isCancelled else { return }
+            withAnimation(.snappy) { index = (index + 1) % signs.count }
+        }
     }
 }
 
