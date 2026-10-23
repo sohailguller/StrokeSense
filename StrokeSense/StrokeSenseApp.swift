@@ -44,7 +44,8 @@ struct StrokeSenseApp: App {
     
     @StateObject private var store = UserStore()
     @StateObject private var favoritesManager = FavoritesManager()
-    @AppStorage("appearance") private var appearance = AppAppearance.system
+    /// Light unless the user picks Automatic or Dark in Profile.
+    @AppStorage("appearance") private var appearance = AppAppearance.light
 
     var body: some Scene {
         WindowGroup {

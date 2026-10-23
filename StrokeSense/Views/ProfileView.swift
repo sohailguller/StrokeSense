@@ -15,7 +15,7 @@ struct ProfileView: View {
     @State private var showPhotoPicker = false
     @State private var cropImage: CropImage?
     @State private var openURL: URL?
-    @AppStorage("appearance") private var appearance = AppAppearance.system
+    @AppStorage("appearance") private var appearance = AppAppearance.light
     @AppStorage(ChatSession.consentKey) private var shareWithOpenAI = false
 
     /// Hosted by the StrokeSense Worker (worker/src/privacy.js); also the App Store Connect privacy URL.

@@ -20,7 +20,7 @@
 
 import SwiftUI
 
-/// The user's light/dark choice, stored with @AppStorage("appearance").
+/// The user's light/dark choice, stored with @AppStorage("appearance"). Defaults to light.
 enum AppAppearance: String, CaseIterable, Identifiable {
     case system, light, dark
 

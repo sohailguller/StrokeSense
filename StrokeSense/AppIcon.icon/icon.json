@@ -6,39 +6,39 @@
     {
       "layers" : [
         {
-          "glass" : true,
+          "glass" : false,
           "image-name" : "Heads.png",
           "name" : "Heads"
         }
       ],
       "name" : "Heads",
       "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
+        "kind" : "none",
+        "opacity" : 0
       },
-      "specular" : true,
+      "specular" : false,
       "translucency" : {
-        "enabled" : true,
-        "value" : 0.3
+        "enabled" : false,
+        "value" : 0
       }
     },
     {
       "layers" : [
         {
-          "glass" : true,
+          "glass" : false,
           "image-name" : "Heart.png",
           "name" : "Heart"
         }
       ],
       "name" : "Heart",
       "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
+        "kind" : "none",
+        "opacity" : 0
       },
-      "specular" : true,
+      "specular" : false,
       "translucency" : {
-        "enabled" : true,
-        "value" : 0.3
+        "enabled" : false,
+        "value" : 0
       }
     }
   ],
