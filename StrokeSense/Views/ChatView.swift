@@ -14,6 +14,8 @@ final class ChatSession: ObservableObject {
     @Published private(set) var errorMessage: String?
     /// A question waiting on the user's permission to send it to OpenAI.
     @Published var pendingQuestion: String?
+    /// Unsent text in Ask's input field. Shared so the Home card can show it instead of examples.
+    @Published var draft = ""
 
     /// Apple requires explicit permission before sharing personal data with a third-party AI.
     static let consentKey = "openAIConsentGiven"
@@ -133,7 +135,6 @@ final class ChatSession: ObservableObject {
 struct ChatView: View {
     @EnvironmentObject private var session: ChatSession
     @EnvironmentObject private var router: AppRouter
-    @State private var inputText = ""
     @FocusState private var inputFocused: Bool
 
     private let bottomID = "bottom"
@@ -150,9 +151,9 @@ struct ChatView: View {
             .onChange(of: session.isLoading) { _, _ in scrollToBottom(proxy) }
         }
         .bottomBar {
-            ChatInputBar(text: $inputText, isFocused: $inputFocused, isLoading: session.isLoading) {
-                let question = inputText
-                inputText = ""
+            ChatInputBar(text: $session.draft, isFocused: $inputFocused, isLoading: session.isLoading) {
+                let question = session.draft
+                session.draft = ""
                 session.ask(question)
             }
         }
@@ -161,10 +162,6 @@ struct ChatView: View {
         // Opened from the Home card's field: bring up the keyboard once the tab has appeared.
         .task(id: router.focusChatInput) {
             guard router.focusChatInput else { return }
-            if let draft = router.draftQuestion {
-                inputText = draft
-                router.draftQuestion = nil
-            }
             try? await Task.sleep(for: .milliseconds(350))
             inputFocused = true
             router.focusChatInput = false
@@ -172,7 +169,7 @@ struct ChatView: View {
         // If permission was declined, put the unsent question back in the text field.
         .onChange(of: session.pendingQuestion) { old, new in
             if new == nil, let old, session.messages.last?.content != old {
-                inputText = old
+                session.draft = old
             }
         }
         .navigationTitle("Stroke Expert")

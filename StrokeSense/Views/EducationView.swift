@@ -7,10 +7,9 @@
 
 import SwiftUI
 
-/// The Learn tab: education topics, videos and the quiz.
+/// The Learn tab: education topics, podcast episodes and the quiz.
 struct EducationView: View {
     @StateObject private var videoVM = VideoViewModel()
-    @Namespace private var transition
     @State private var showQuiz = false
 
     var body: some View {
@@ -22,8 +21,8 @@ struct EducationView: View {
             }
 
             Section {
-                topicLink(.types, title: "Types of stroke", subtitle: "Ischemic, hemorrhagic and TIA", systemImage: "brain.head.profile.fill")
-                topicLink(.riskFactors, title: "Risk factors", subtitle: "What raises your chance of stroke", systemImage: "exclamationmark.triangle.fill")
+                topicLink(.types, title: "Types of Stroke", subtitle: "Ischemic, hemorrhagic and TIA", systemImage: "brain.head.profile.fill")
+                topicLink(.riskFactors, title: "Risk Factors", subtitle: "What raises your chance of stroke", systemImage: "exclamationmark.triangle.fill")
                 topicLink(.prevention, title: "Prevention", subtitle: "Eight habits that lower your risk", systemImage: "shield.lefthalf.filled")
                 topicLink(.treatments, title: "Treatments", subtitle: "How doctors treat a stroke", systemImage: "cross.case.fill")
             } header: {
@@ -55,10 +54,7 @@ struct EducationView: View {
         .scrollContentBackground(.hidden)
         .background(.surface)
         .navigationTitle("Learn")
-        .navigationDestination(for: LearnTopic.self) { topic in
-            topic.destination
-                .navigationTransition(.zoom(sourceID: topic, in: transition))
-        }
+        .navigationDestination(for: LearnTopic.self) { $0.destination }
         .fullScreenCover(isPresented: $showQuiz) { GameView() }
         .onAppear { videoVM.fetchVideos() }
     }
@@ -67,7 +63,6 @@ struct EducationView: View {
         NavigationLink(value: topic) {
             LearnRow(title: title, subtitle: subtitle, systemImage: systemImage, tint: tint)
         }
-        .matchedTransitionSource(id: topic, in: transition)
     }
 }
 
@@ -91,6 +86,7 @@ private struct LearnRow: View {
     let subtitle: String
     let systemImage: String
     var tint: Color = .accentColor
+    @ScaledMetric(relativeTo: .body) private var minHeight: CGFloat = 56
 
     var body: some View {
         HStack(spacing: Spacing.m) {
@@ -103,7 +99,11 @@ private struct LearnRow: View {
                     .font(.subheadline)
                     .foregroundStyle(.inkMuted)
             }
+            // Pin dividers to the text so every row lines up, whatever the symbol's width.
+            .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
         }
+        // Whole-point row heights; fractional ones leave a hairline seam between rows.
+        .frame(minHeight: minHeight.rounded(), alignment: .leading)
         .padding(.vertical, Spacing.xxs)
     }
 }

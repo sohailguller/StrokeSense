@@ -54,32 +54,47 @@ struct ChunkyButtonStyle: ButtonStyle {
     var edge: Color
     var label: Color
     var border: Color? = nil
+
+    func makeBody(configuration: Configuration) -> some View {
+        ChunkyButton(label: configuration.label, isPressed: configuration.isPressed,
+                     fill: fill, edge: edge, labelColor: label, border: border)
+    }
+}
+
+/// The view behind ChunkyButtonStyle. A view (not the style) reads `isEnabled`, so the
+/// disabled look also works when another style wraps this one.
+private struct ChunkyButton: View {
+    let label: ButtonStyleConfiguration.Label
+    let isPressed: Bool
+    let fill: Color
+    let edge: Color
+    let labelColor: Color
+    let border: Color?
     @Environment(\.isEnabled) private var isEnabled
 
     private let depth: CGFloat = 4
 
-    func makeBody(configuration: Configuration) -> some View {
-        let pressed = configuration.isPressed
-        configuration.label
+    var body: some View {
+        // Disabled buttons go flat gray, as in Duolingo, instead of a faded brand color.
+        label
             .font(.headline)
-            .foregroundStyle(label)
+            .foregroundStyle(isEnabled ? labelColor : .inkMuted)
             .frame(maxWidth: .infinity, minHeight: 50)
             .background {
                 Capsule()
-                    .fill(fill)
+                    .fill(isEnabled ? fill : .hairline)
                     .overlay {
-                        if let border { Capsule().strokeBorder(border, lineWidth: 1.5) }
+                        if let border, isEnabled { Capsule().strokeBorder(border, lineWidth: 1.5) }
                     }
             }
-            .offset(y: pressed ? depth : 0)
+            .offset(y: isPressed ? depth : 0)
             .background {
                 Capsule()
-                    .fill(edge)
+                    .fill(isEnabled ? edge : .hairline.mix(with: .black, by: 0.12))
                     .offset(y: depth)
             }
             .padding(.bottom, depth)
-            .opacity(isEnabled ? 1 : 0.4)
-            .animation(.snappy(duration: 0.12), value: pressed)
+            .animation(.snappy(duration: 0.12), value: isPressed)
     }
 }
 

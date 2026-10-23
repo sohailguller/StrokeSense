@@ -267,12 +267,24 @@ private struct AskExpertCard: View {
             }
 
             Button {
-                router.draftQuestion = typedQuestion
+                // Keep anything the user already typed; otherwise carry over the example on screen.
+                if session.draft.isEmpty, let typedQuestion {
+                    session.draft = typedQuestion
+                }
                 router.focusChatInput = true
                 router.selectedTab = .ask
             } label: {
                 HStack {
-                    TypingPrompt(prompts: Self.examples, current: $typedQuestion)
+                    if session.draft.isEmpty {
+                        TypingPrompt(prompts: Self.examples, current: $typedQuestion)
+                    } else {
+                        // An unsent question from Ask: show it as-is instead of animating over it.
+                        Text(session.draft)
+                            .font(.body)
+                            .foregroundStyle(.ink)
+                            .lineLimit(1)
+                            .truncationMode(.head)
+                    }
                     Spacer(minLength: Spacing.xs)
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.title2)
