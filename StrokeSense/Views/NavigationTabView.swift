@@ -45,6 +45,13 @@ struct NavigationTabView: View {
         .modifier(TabBarMinimizeOnScroll())
         .environmentObject(router)
         .environmentObject(chatSession)
+        .sheet(isPresented: Binding(
+            get: { chatSession.pendingQuestion != nil },
+            set: { if !$0 { chatSession.declineConsent() } }
+        )) {
+            AIConsentSheet()
+                .environmentObject(chatSession)
+        }
         .onChange(of: scenePhase) { _, phase in
             if phase == .inactive { saveAction() }
         }

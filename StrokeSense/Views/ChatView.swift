@@ -12,6 +12,12 @@ final class ChatSession: ObservableObject {
     @Published private(set) var messages: [ChatMessage] = []
     @Published private(set) var isLoading = false
     @Published private(set) var errorMessage: String?
+    /// A question waiting on the user's permission to send it to OpenAI.
+    @Published var pendingQuestion: String?
+
+    /// Apple requires explicit permission before sharing personal data with a third-party AI.
+    private static let consentKey = "openAIConsentGiven"
+    private var hasConsent: Bool { UserDefaults.standard.bool(forKey: Self.consentKey) }
 
     // The system prompt lives in the chat Worker (worker/src/index.js).
     private let client = OpenAIClient()
@@ -68,6 +74,12 @@ final class ChatSession: ObservableObject {
         let question = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !question.isEmpty, !isLoading else { return }
 
+        // Built-in answers stay on the device; anything else needs permission first.
+        if Self.cannedAnswers[question] == nil && !hasConsent {
+            pendingQuestion = question
+            return
+        }
+
         errorMessage = nil
         messages.append(ChatMessage(role: "user", content: question))
 
@@ -76,6 +88,17 @@ final class ChatSession: ObservableObject {
         } else {
             requestAnswer()
         }
+    }
+
+    func acceptConsent() {
+        UserDefaults.standard.set(true, forKey: Self.consentKey)
+        let question = pendingQuestion
+        pendingQuestion = nil
+        if let question { ask(question) }
+    }
+
+    func declineConsent() {
+        pendingQuestion = nil
     }
 
     func retry() {
@@ -145,11 +168,18 @@ struct ChatView: View {
         }
         .safeAreaInset(edge: .bottom) {
             ChatInputBar(text: $inputText, isFocused: $inputFocused, isLoading: session.isLoading) {
-                session.ask(inputText)
+                let question = inputText
                 inputText = ""
+                session.ask(question)
             }
         }
         .background(.surface)
+        // If permission was declined, put the unsent question back in the text field.
+        .onChange(of: session.pendingQuestion) { old, new in
+            if new == nil, let old, session.messages.last?.content != old {
+                inputText = old
+            }
+        }
         .navigationTitle("Stroke Expert")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -311,4 +341,53 @@ private struct ChatErrorRow: View {
         ChatView()
     }
     .environmentObject(ChatSession())
+}
+
+/// Shown once, before the first question is sent to OpenAI.
+struct AIConsentSheet: View {
+    @EnvironmentObject private var session: ChatSession
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: Spacing.l) {
+                ExpertMark(font: .largeTitle)
+                Text("Before you ask")
+                    .font(.heroTitle)
+                    .foregroundStyle(.ink)
+
+                VStack(alignment: .leading, spacing: Spacing.m) {
+                    point("arrow.up.message.fill", "Your questions are sent to OpenAI to write the answers. OpenAI may use them to improve its models.")
+                    point("person.crop.circle.badge.xmark", "Don't include your name or personal health details.")
+                    point("stethoscope", "Answers are general information, not medical advice. In an emergency, call an ambulance.")
+                }
+            }
+            .padding(Spacing.l)
+            .padding(.top, Spacing.m)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .safeAreaInset(edge: .bottom) {
+            VStack(spacing: Spacing.s) {
+                Button("Agree and Continue") { session.acceptConsent() }
+                    .buttonStyle(.primary)
+                Button("Not Now") { session.declineConsent() }
+                    .buttonStyle(.secondary)
+            }
+            .padding(.horizontal, Spacing.l)
+            .padding(.bottom, Spacing.s)
+            .background(.surface)
+        }
+        .background(.surface)
+        .interactiveDismissDisabled()
+        .presentationDetents([.large])
+    }
+
+    private func point(_ systemImage: String, _ text: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: Spacing.m) {
+            TopicSymbol(systemImage: systemImage)
+            Text(text)
+                .font(.body)
+                .foregroundStyle(.ink)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
 }
