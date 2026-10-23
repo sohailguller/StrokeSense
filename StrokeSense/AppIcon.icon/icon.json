@@ -1,23 +1,23 @@
 {
   "fill" : {
-    "automatic-gradient" : "srgb:0.81961,0.06275,0.18039,1.00000"
+    "solid" : "srgb:0.00000,0.00000,0.00000,1.00000"
   },
   "groups" : [
     {
       "layers" : [
         {
-          "glass" : true,
-          "image-name" : "Pulse.svg",
-          "name" : "Pulse"
+          "glass" : false,
+          "image-name" : "Logo.png",
+          "name" : "Logo"
         }
       ],
       "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
+        "kind" : "none",
+        "opacity" : 0
       },
       "translucency" : {
-        "enabled" : true,
-        "value" : 0.4
+        "enabled" : false,
+        "value" : 0
       }
     }
   ],
