@@ -530,6 +530,7 @@ struct ArticleRow: View {
     @ScaledMetric(relativeTo: .body) private var thumbSize: CGFloat = 64
 
     private var sourceName: String {
+        if let source = article.source { return source }
         guard let host = URL(string: article.url)?.host() else { return "" }
         return host.replacingOccurrences(of: "www.", with: "")
     }

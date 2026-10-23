@@ -1,3 +1,5 @@
+import { handleNews } from "./news.js";
+
 // StrokeSense chat proxy (Cloudflare Worker, free plan).
 // Holds the OpenAI key and system prompt server-side, and only answers requests carrying
 // a valid Firebase App Check token, so the endpoint can't be used outside the real app.
@@ -20,7 +22,11 @@ const SYSTEM_PROMPT =
 let jwksCache = { keys: null, fetchedAt: 0 };
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
+    if (request.method === "GET" && new URL(request.url).pathname === "/news") {
+      return handleNews(request, ctx);
+    }
+
     if (request.method !== "POST") {
       return errorResponse(405, "Method not allowed.");
     }

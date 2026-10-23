@@ -13,6 +13,8 @@ struct NewsArticle: Identifiable {
     let description: String
     let url: String
     let imageURL: String
+    /// Publication name, e.g. "ScienceDaily". When nil, the web address is shown instead.
+    var source: String? = nil
 }
 
 

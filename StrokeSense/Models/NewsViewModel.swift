@@ -6,14 +6,16 @@
 //
 import SwiftUI
 import SwiftSoup
-import FirebaseFirestore
 
 class NewsViewModel: ObservableObject {
     @Published var newsArticles: [NewsArticle] = []
     @Published var staticArticles: [NewsArticle] = []
     
-    private var db = Firestore.firestore()
     private var hasLoaded = false
+
+    /// Recent stroke news from credible research-news feeds, gathered and cached by the
+    /// StrokeSense Worker (worker/src/news.js). It refreshes on its own, so no list to maintain.
+    private static let newsURL = URL(string: "https://strokesense-chat.ims03g.workers.dev/news")!
     
     private let staticURLs = [
         "https://apnews.com/article/stroke-risk-death-nutrition-exercise-ozempic-mounjaro-5fee3375b627377b6a39565ce2a647c5",
@@ -37,14 +39,28 @@ class NewsViewModel: ObservableObject {
     }
     
     private func fetchNewsArticles() {
-        db.collection("urls").getDocuments { querySnapshot, error in
-            if let error = error {
-                print("Error getting documents: \(error)")
-                return
+        Task { @MainActor in
+            do {
+                let (data, _) = try await URLSession.shared.data(from: Self.newsURL)
+                let feed = try JSONDecoder().decode(NewsFeed.self, from: data)
+                newsArticles = feed.articles.map {
+                    NewsArticle(title: $0.title, description: $0.description, url: $0.url, imageURL: $0.imageURL, source: $0.source)
+                }
+            } catch {
+                print("Couldn't load news: \(error)")
             }
-            let urls = querySnapshot?.documents.compactMap { $0.data()["url"] as? String } ?? []
-            self.loadArticles(from: urls) { self.newsArticles = $0 }
         }
+    }
+
+    private struct NewsFeed: Decodable {
+        struct Item: Decodable {
+            let title: String
+            let url: String
+            let source: String
+            let description: String
+            let imageURL: String
+        }
+        let articles: [Item]
     }
     
     /// "Stroke | Johns Hopkins Medicine" -> "Stroke". The source is shown separately.
