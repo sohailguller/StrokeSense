@@ -38,6 +38,8 @@ struct StrokeSenseApp: App {
     
     @StateObject private var store = UserStore()
     @StateObject private var favoritesManager = FavoritesManager()
+    @AppStorage("appearance") private var appearance = AppAppearance.system
+
     var body: some Scene {
         WindowGroup {
             NavigationTabView {
@@ -51,6 +53,7 @@ struct StrokeSenseApp: App {
             }
             // One type family across the app: SF Pro Rounded (see DesignSystem/Theme.swift).
             .fontDesign(.rounded)
+            .preferredColorScheme(appearance.colorScheme)
             .environmentObject(store)
             .environmentObject(favoritesManager)
             .task {

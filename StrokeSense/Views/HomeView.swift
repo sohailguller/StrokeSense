@@ -243,6 +243,16 @@ private struct BeFastHeroCard: View {
 private struct AskExpertCard: View {
     @EnvironmentObject private var router: AppRouter
     @EnvironmentObject private var session: ChatSession
+    /// The example being typed; tapping the field carries it over to Ask.
+    @State private var typedQuestion: String?
+
+    private static let examples = [
+        "Can young people have a stroke?",
+        "How long does recovery take?",
+        "Is a mini-stroke serious?",
+        "Can stress cause a stroke?",
+        "What does a stroke feel like?"
+    ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.m) {
@@ -259,14 +269,13 @@ private struct AskExpertCard: View {
             }
 
             Button {
+                router.draftQuestion = typedQuestion
                 router.focusChatInput = true
                 router.selectedTab = .ask
             } label: {
                 HStack {
-                    Text("Ask a question")
-                        .font(.body)
-                        .foregroundStyle(.inkMuted)
-                    Spacer()
+                    TypingPrompt(prompts: Self.examples, current: $typedQuestion)
+                    Spacer(minLength: Spacing.xs)
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.title2)
                         .foregroundStyle(.tint)
@@ -288,6 +297,63 @@ private struct AskExpertCard: View {
         }
         .padding(Spacing.l)
         .cardStyle(radius: Radius.hero)
+    }
+}
+
+/// Types example questions into the field one character at a time, then clears and moves on.
+private struct TypingPrompt: View {
+    let prompts: [String]
+    @Binding var current: String?
+    @State private var shown = ""
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        HStack(spacing: 1) {
+            Text(shown)
+                .font(.body)
+                .foregroundStyle(.ink)
+                .lineLimit(1)
+                .truncationMode(.head)
+            Capsule()
+                .fill(.tint)
+                .frame(width: 2, height: 22)
+        }
+        .accessibilityHidden(true)
+        .task { await run() }
+    }
+
+    private func run() async {
+        var index = 0
+        while !Task.isCancelled {
+            let prompt = prompts[index]
+            current = prompt
+            if reduceMotion {
+                shown = prompt
+                guard await pause(3) else { return }
+            } else {
+                for character in prompt {
+                    shown.append(character)
+                    guard await pause(0.05) else { return }
+                }
+                guard await pause(2) else { return }
+                while !shown.isEmpty {
+                    shown.removeLast()
+                    guard await pause(0.015) else { return }
+                }
+                guard await pause(0.35) else { return }
+            }
+            index = (index + 1) % prompts.count
+        }
+    }
+
+    /// Sleeps for the given seconds; returns false once the view is gone.
+    private func pause(_ seconds: Double) async -> Bool {
+        do {
+            try await Task.sleep(for: .seconds(seconds))
+            return true
+        } catch {
+            return false
+        }
     }
 }
 

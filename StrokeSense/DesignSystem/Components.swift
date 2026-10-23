@@ -460,24 +460,10 @@ struct SourceFootnote: View {
                     }
                     .tint(.accentColor)
                 }
-                DisclaimerText("General information only, not medical advice. Talk to a doctor about your health.")
-                    .padding(.top, Spacing.xs)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .safariSheet(url: $openURL)
         }
-    }
-}
-
-struct DisclaimerText: View {
-    let text: String
-    init(_ text: String) { self.text = text }
-
-    var body: some View {
-        Text(text)
-            .font(.footnote)
-            .foregroundStyle(.inkMuted)
-            .fixedSize(horizontal: false, vertical: true)
     }
 }
 

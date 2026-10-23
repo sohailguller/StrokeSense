@@ -44,8 +44,6 @@ struct EducationView: View {
                 .tint(.ink)
             } header: {
                 Text("Practice")
-            } footer: {
-                Text("General information based on the sources listed in each topic. It is not medical advice. Talk to a doctor about your health.")
             }
         }
         .listStyle(.insetGrouped)

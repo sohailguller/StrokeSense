@@ -16,7 +16,7 @@ final class ChatSession: ObservableObject {
     @Published var pendingQuestion: String?
 
     /// Apple requires explicit permission before sharing personal data with a third-party AI.
-    private static let consentKey = "openAIConsentGiven"
+    static let consentKey = "openAIConsentGiven"
     private var hasConsent: Bool { UserDefaults.standard.bool(forKey: Self.consentKey) }
 
     // The system prompt lives in the chat Worker (worker/src/index.js).
@@ -161,6 +161,10 @@ struct ChatView: View {
         // Opened from the Home card's field: bring up the keyboard once the tab has appeared.
         .task(id: router.focusChatInput) {
             guard router.focusChatInput else { return }
+            if let draft = router.draftQuestion {
+                inputText = draft
+                router.draftQuestion = nil
+            }
             try? await Task.sleep(for: .milliseconds(350))
             inputFocused = true
             router.focusChatInput = false
@@ -239,10 +243,6 @@ private struct ChatIntro: View {
             SuggestionList(questions: ChatSession.suggestions, onSelect: onSelect)
                 .cardStyle()
                 .padding(.top, Spacing.s)
-
-            Text("AI answers can be wrong and aren't medical advice.")
-                .font(.footnote)
-                .foregroundStyle(.inkMuted)
         }
     }
 }
@@ -299,11 +299,11 @@ private struct ChatInputBar: View {
 
     var body: some View {
         HStack(alignment: .bottom, spacing: Spacing.xs) {
+            // Return adds a line and the button sends, as in Messages. Sending from the return key
+            // let the keyboard re-insert autocorrected text after the field was cleared.
             TextField("Ask about stroke", text: $text, axis: .vertical)
                 .lineLimit(1...5)
                 .focused(isFocused)
-                .submitLabel(.send)
-                .onSubmit { if canSend { onSend() } }
                 .padding(.leading, Spacing.m)
                 .padding(.vertical, 12)
 

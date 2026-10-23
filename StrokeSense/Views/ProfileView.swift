@@ -14,6 +14,8 @@ struct ProfileView: View {
     @State private var photoItem: PhotosPickerItem?
     @State private var cropImage: CropImage?
     @State private var openURL: URL?
+    @AppStorage("appearance") private var appearance = AppAppearance.system
+    @AppStorage(ChatSession.consentKey) private var shareWithOpenAI = false
 
     private var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
@@ -51,13 +53,39 @@ struct ProfileView: View {
                         .submitLabel(.done)
                 }
 
-                Section {
-                    LabeledContent("Version", value: appVersion)
+                Section("Appearance") {
+                    Picker("Appearance", selection: $appearance) {
+                        ForEach(AppAppearance.allCases) { option in
+                            Text(option.title).tag(option)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                }
+
+                Section("Stroke Expert") {
+                    Toggle("Share questions with OpenAI", isOn: $shareWithOpenAI)
+                    NavigationLink("How the Stroke Expert works") {
+                        InfoPage(title: "How the Stroke Expert Works", paragraphs: [
+                            "The Stroke Expert uses an AI model from OpenAI to answer questions about stroke in plain language.",
+                            "When you ask your own question, it's sent to OpenAI to write the answer. OpenAI may use it to improve its models. The suggested questions are answered on your phone and aren't sent anywhere.",
+                            "Don't include your name or personal health details in questions.",
+                            "AI answers can be wrong. Check important information with a doctor.",
+                            "Turn off Share questions with OpenAI to stop sending questions. You'll be asked again the next time you ask your own question."
+                        ])
+                    }
+                }
+
+                Section("About") {
+                    NavigationLink("Medical disclaimer") {
+                        InfoPage(title: "Medical Disclaimer", paragraphs: [
+                            "StrokeSense provides general education about stroke. It is not medical advice and doesn't replace a doctor.",
+                            "Talk to a doctor about your own health, symptoms or treatment.",
+                            "If you notice signs of a stroke, call an ambulance right away."
+                        ])
+                    }
                     Button("Where our information comes from") { openURL = Source.nhlbiOverview.url }
-                } header: {
-                    Text("About")
-                } footer: {
-                    Text("StrokeSense provides general education, not medical advice. Questions you ask the Stroke Expert are sent to OpenAI to generate answers and may be used to improve their models. Don't share personal health details. In an emergency, call an ambulance.")
+                    LabeledContent("Version", value: appVersion)
                 }
             }
             .scrollContentBackground(.hidden)
@@ -97,6 +125,30 @@ struct ProfileView: View {
         let scale = min(1, 2048 / max(image.size.width, image.size.height))
         let size = CGSize(width: image.size.width * scale, height: image.size.height * scale)
         cropImage = CropImage(image: image.preparingThumbnail(of: size) ?? image)
+    }
+}
+
+/// A simple page of text pushed from Profile.
+private struct InfoPage: View {
+    let title: String
+    let paragraphs: [String]
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: Spacing.m) {
+                ForEach(paragraphs, id: \.self) { paragraph in
+                    Text(paragraph)
+                        .font(.body)
+                        .foregroundStyle(.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(Spacing.l)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .background(.surface)
+        .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
