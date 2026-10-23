@@ -5,6 +5,7 @@
 //  Created by Sohail Guller on 6/10/25.
 //
 import SwiftUI
+import OSLog
 import FirebaseFirestore
 
 struct Video: Codable, Hashable, Identifiable {
@@ -29,7 +30,7 @@ class VideoViewModel: ObservableObject {
         db.collection("videos").getDocuments { querySnapshot, error in
             DispatchQueue.main.async { self.isLoading = false }
             if let error = error {
-                print("Error getting videos: \(error)")
+                Logger.app.error("Couldn't load episodes: \(error.localizedDescription)")
                 return
             }
             
@@ -40,7 +41,7 @@ class VideoViewModel: ObservableObject {
                 do {
                     return try document.data(as: Video.self)
                 } catch {
-                    print("Error decoding video \(document.documentID): \(error)")
+                    Logger.app.error("Couldn't decode episode \(document.documentID): \(error.localizedDescription)")
                     return nil
                 }
             }

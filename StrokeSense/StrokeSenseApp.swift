@@ -6,8 +6,14 @@
 //
 
 import SwiftUI
+import OSLog
 import FirebaseCore
 import FirebaseAppCheck
+
+extension Logger {
+    /// App-wide log. Messages show in Xcode and Console.app, and stay out of release output.
+    static let app = Logger(subsystem: Bundle.main.bundleIdentifier ?? "StrokeSense", category: "app")
+}
 
 /// Proves to Firebase that requests (e.g. to the Stroke Expert chat Worker) come from the real app.
 class StrokeSenseAppCheckProviderFactory: NSObject, AppCheckProviderFactory {
@@ -47,7 +53,7 @@ struct StrokeSenseApp: App {
                     do {
                         try await store.save(user: store.user)
                     } catch {
-                        print("Couldn't save profile: \(error)")
+                        Logger.app.error("Couldn't save profile: \(error.localizedDescription)")
                     }
                 }
             }
@@ -60,7 +66,7 @@ struct StrokeSenseApp: App {
                 do {
                     try await store.load()
                 } catch {
-                    print("Couldn't load profile: \(error)")
+                    Logger.app.error("Couldn't load profile: \(error.localizedDescription)")
                 }
             }
         }

@@ -5,6 +5,7 @@
 //  Created by Sohail Guller on 2/21/25.
 //
 import Foundation
+import OSLog
 import FirebaseAppCheck
 
 struct Message: Codable {
@@ -54,7 +55,7 @@ class OpenAIClient {
         let decoded = try? JSONDecoder().decode(ChatResponse.self, from: data)
 
         if let httpResponse = response as? HTTPURLResponse, !(200..<300).contains(httpResponse.statusCode) {
-            print("Chat server error \(httpResponse.statusCode): \(String(data: data, encoding: .utf8) ?? "")")
+            Logger.app.error("Chat server error \(httpResponse.statusCode): \(decoded?.error ?? "no message")")
             throw OpenAIClientError.server(decoded?.error ?? "The Stroke Expert couldn't answer right now. Please try again.")
         }
 

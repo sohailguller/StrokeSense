@@ -5,6 +5,7 @@
 //  Created by Sohail Guller on 2/21/25.
 //
 import SwiftUI
+import OSLog
 
 /// One conversation shared across the app, so suggestion chips on Today can open Ask mid-question.
 @MainActor
@@ -124,7 +125,7 @@ final class ChatSession: ObservableObject {
                 let reply = try await client.sendMessage(messages: history)
                 messages.append(ChatMessage(role: "assistant", content: reply.content))
             } catch {
-                print("Error: \(error)")
+                Logger.app.error("Stroke Expert request failed: \(error.localizedDescription)")
                 errorMessage = error.localizedDescription
             }
             isLoading = false

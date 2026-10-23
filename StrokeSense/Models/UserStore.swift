@@ -41,14 +41,4 @@ class UserStore: ObservableObject {
         }
         _ = try await task.value
     }
-    
-    func toggleFavorite(videoID: String, videoName: String) {
-        if let index = user.favorites.firstIndex(where: { $0.videoID == videoID }) {
-            // If already in favorites, remove it
-            user.favorites.remove(at: index)
-        } else {
-            // If not in favorites, add it
-            user.favorites.append(Video(name: videoName, videoID: videoID))
-        }
-    }
 }

@@ -14,7 +14,6 @@
 		593B495D2C3C9515001E743F /* StrokeSenseUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593B495C2C3C9515001E743F /* StrokeSenseUITests.swift */; };
 		593B495F2C3C9515001E743F /* StrokeSenseUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593B495E2C3C9515001E743F /* StrokeSenseUITestsLaunchTests.swift */; };
 		593B496E2C3C956A001E743F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593B496D2C3C956A001E743F /* User.swift */; };
-		593B49742C3C9909001E743F /* ArticleSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593B49732C3C9909001E743F /* ArticleSummary.swift */; };
 		593B497C2C3CA318001E743F /* Question.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593B497B2C3CA318001E743F /* Question.swift */; };
 		593B497E2C3CA7D0001E743F /* Quiz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593B497D2C3CA7D0001E743F /* Quiz.swift */; };
 		593B49BC2C3E177B001E743F /* Questions.json in Resources */ = {isa = PBXBuildFile; fileRef = 593B49BB2C3E177B001E743F /* Questions.json */; };
@@ -31,12 +30,10 @@
 		59777E392D80F492003E6934 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59777E382D80F492003E6934 /* GoogleService-Info.plist */; };
 		59777E3A2D80F492003E6934 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59777E382D80F492003E6934 /* GoogleService-Info.plist */; };
 		59777E3B2D80F492003E6934 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59777E382D80F492003E6934 /* GoogleService-Info.plist */; };
-		59777E3E2D80F601003E6934 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 59777E3D2D80F601003E6934 /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		59777E402D810350003E6934 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 59777E3F2D810350003E6934 /* FirebaseFirestore */; };
 		59B2155F2D6996C400FCA65F /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59B2155E2D6996C400FCA65F /* ChatView.swift */; };
 		59B215602D6996C400FCA65F /* ChatRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59B2155D2D6996C400FCA65F /* ChatRow.swift */; };
 		59B215622D6996CF00FCA65F /* OpenAIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59B215612D6996CF00FCA65F /* OpenAIClient.swift */; };
-		59B215662D6A67F300FCA65F /* NewsSummaries.json in Resources */ = {isa = PBXBuildFile; fileRef = 59B215652D6A67F300FCA65F /* NewsSummaries.json */; };
 		59E10F452DF8F6F500D5EEFC /* VideoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59E10F442DF8F6F500D5EEFC /* VideoViewModel.swift */; };
 		59EF07172D57F95F00379E1C /* UserStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59EF07162D57F95F00379E1C /* UserStore.swift */; };
 		59F877452D1DDC3C005D6112 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59F877442D1DDC3C005D6112 /* NewsView.swift */; };
@@ -45,7 +42,6 @@
 		59F8774F2D1DF697005D6112 /* YouTubeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59F8774E2D1DF697005D6112 /* YouTubeView.swift */; };
 		59F877532D1F37E7005D6112 /* NewsArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59F877522D1F37E7005D6112 /* NewsArticle.swift */; };
 		59F877552D1F38C4005D6112 /* NewsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59F877542D1F38C4005D6112 /* NewsViewModel.swift */; };
-		59FD8B5B2D6A839D007AD01C /* StaticArticles.json in Resources */ = {isa = PBXBuildFile; fileRef = 59FD8B5A2D6A839D007AD01C /* StaticArticles.json */; };
 		59FD8B702D6B9FC4007AD01C /* FavoritesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59FD8B6F2D6B9FC4007AD01C /* FavoritesManager.swift */; };
 		59FD8B722D6BE3C3007AD01C /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59FD8B712D6BE3C3007AD01C /* ChatMessage.swift */; };
 		59FD8B7B2D6C1184007AD01C /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 59FD8B7A2D6C1184007AD01C /* SwiftSoup */; };
@@ -83,7 +79,6 @@
 		593B495C2C3C9515001E743F /* StrokeSenseUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeSenseUITests.swift; sourceTree = "<group>"; };
 		593B495E2C3C9515001E743F /* StrokeSenseUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeSenseUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		593B496D2C3C956A001E743F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		593B49732C3C9909001E743F /* ArticleSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleSummary.swift; sourceTree = "<group>"; };
 		593B497B2C3CA318001E743F /* Question.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Question.swift; sourceTree = "<group>"; };
 		593B497D2C3CA7D0001E743F /* Quiz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quiz.swift; sourceTree = "<group>"; };
 		593B49BB2C3E177B001E743F /* Questions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Questions.json; sourceTree = "<group>"; };
@@ -101,7 +96,6 @@
 		59B2155D2D6996C400FCA65F /* ChatRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRow.swift; sourceTree = "<group>"; };
 		59B2155E2D6996C400FCA65F /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		59B215612D6996CF00FCA65F /* OpenAIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIClient.swift; sourceTree = "<group>"; };
-		59B215652D6A67F300FCA65F /* NewsSummaries.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = NewsSummaries.json; sourceTree = "<group>"; };
 		59E10F442DF8F6F500D5EEFC /* VideoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewModel.swift; sourceTree = "<group>"; };
 		59EF07162D57F95F00379E1C /* UserStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStore.swift; sourceTree = "<group>"; };
 		59F877442D1DDC3C005D6112 /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
@@ -110,7 +104,6 @@
 		59F8774E2D1DF697005D6112 /* YouTubeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeView.swift; sourceTree = "<group>"; };
 		59F877522D1F37E7005D6112 /* NewsArticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsArticle.swift; sourceTree = "<group>"; };
 		59F877542D1F38C4005D6112 /* NewsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsViewModel.swift; sourceTree = "<group>"; };
-		59FD8B5A2D6A839D007AD01C /* StaticArticles.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = StaticArticles.json; sourceTree = "<group>"; };
 		59FD8B6F2D6B9FC4007AD01C /* FavoritesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesManager.swift; sourceTree = "<group>"; };
 		59FD8B712D6BE3C3007AD01C /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		8EB0F58926D479CB33E6804B /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -125,7 +118,6 @@
 				59FD8B7B2D6C1184007AD01C /* SwiftSoup in Frameworks */,
 				59FD8B832D6C12B8007AD01C /* MarkdownUI in Frameworks */,
 				59777E402D810350003E6934 /* FirebaseFirestore in Frameworks */,
-				59777E3E2D80F601003E6934 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				5A00F0032EB0000000A1B001 /* FirebaseAppCheck in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -214,7 +206,6 @@
 				593B496D2C3C956A001E743F /* User.swift */,
 				59EF07162D57F95F00379E1C /* UserStore.swift */,
 				59E10F442DF8F6F500D5EEFC /* VideoViewModel.swift */,
-				593B49732C3C9909001E743F /* ArticleSummary.swift */,
 				59B215612D6996CF00FCA65F /* OpenAIClient.swift */,
 				593B497B2C3CA318001E743F /* Question.swift */,
 				593B497D2C3CA7D0001E743F /* Quiz.swift */,
@@ -253,8 +244,6 @@
 			isa = PBXGroup;
 			children = (
 				593B49BB2C3E177B001E743F /* Questions.json */,
-				59B215652D6A67F300FCA65F /* NewsSummaries.json */,
-				59FD8B5A2D6A839D007AD01C /* StaticArticles.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -386,9 +375,7 @@
 			files = (
 				59777E3A2D80F492003E6934 /* GoogleService-Info.plist in Resources */,
 				593B49492C3C9514001E743F /* Preview Assets.xcassets in Resources */,
-				59FD8B5B2D6A839D007AD01C /* StaticArticles.json in Resources */,
 				593B49BC2C3E177B001E743F /* Questions.json in Resources */,
-				59B215662D6A67F300FCA65F /* NewsSummaries.json in Resources */,
 				593B49462C3C9514001E743F /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -420,7 +407,6 @@
 				838086257F85A3779D3875E5 /* Theme.swift in Sources */,
 				594CBA5A2CE131490008EDFB /* PreventionView.swift in Sources */,
 				59FD8B722D6BE3C3007AD01C /* ChatMessage.swift in Sources */,
-				593B49742C3C9909001E743F /* ArticleSummary.swift in Sources */,
 				59F8774B2D1DE9A7005D6112 /* GameView.swift in Sources */,
 				5972B4972C979F3D00B0B25C /* NavigationTabView.swift in Sources */,
 				597705EC2CC5DAE9005E4A97 /* HomeView.swift in Sources */,
@@ -808,11 +794,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		59777E3D2D80F601003E6934 /* FirebaseAnalyticsWithoutAdIdSupport */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 59777E3C2D80F601003E6934 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalyticsWithoutAdIdSupport;
-		};
 		59777E3F2D810350003E6934 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 59777E3C2D80F601003E6934 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

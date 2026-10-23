@@ -5,6 +5,7 @@
 //  Created by Sohail Guller on 12/27/24.
 //
 import SwiftUI
+import OSLog
 import SwiftSoup
 
 class NewsViewModel: ObservableObject {
@@ -47,7 +48,7 @@ class NewsViewModel: ObservableObject {
                     NewsArticle(title: $0.title, description: $0.description, url: $0.url, imageURL: $0.imageURL, source: $0.source)
                 }
             } catch {
-                print("Couldn't load news: \(error)")
+                Logger.app.error("Couldn't load news: \(error.localizedDescription)")
             }
         }
     }
@@ -93,7 +94,7 @@ class NewsViewModel: ObservableObject {
                     results[index] = article
                     lock.unlock()
                 } catch {
-                    print("Failed to parse HTML: \(error)")
+                    Logger.app.error("Couldn't read article page: \(error.localizedDescription)")
                 }
             }.resume()
         }
@@ -114,17 +115,3 @@ extension String {
         }
     }
 }
-
-/*
- // Hardcoded for offline use
- import Foundation
- 
- class NewsViewModel: ObservableObject {
- @Published var articles: [ArticleSummary] = []
- 
- init() {
- let articles: [ArticleSummary] = load("NewsSummaries")
- self.articles = articles
- }
- }
- */
