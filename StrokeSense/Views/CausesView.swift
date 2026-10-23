@@ -28,7 +28,6 @@ struct CausesView: View {
         InfoTopicScreen(
             navigationTitle: "Risk Factors",
             hero: TopicHero(
-                eyebrow: "Understand",
                 title: "Risk factors",
                 summary: "Some conditions and habits make a stroke more likely. Many of them can be treated or changed.",
                 systemImage: "exclamationmark.triangle.fill"

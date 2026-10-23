@@ -37,7 +37,7 @@ enum Radius {
 
 /// Typography: one family, SF Pro Rounded (applied app-wide with `.fontDesign(.rounded)`),
 /// always from Dynamic Type text styles. Hierarchy comes from size and weight only:
-/// no serif pairing, no uppercase or letter-spaced labels.
+/// no serif pairing, no uppercase or letter-spaced labels, and no small "eyebrow" labels above titles.
 ///
 /// Icons: SF Symbols only. They inherit the weight and size of adjacent text, so they stay
 /// consistent with the type. Symbols sit directly on the surface, never inside colored tiles
@@ -61,18 +61,25 @@ extension Font {
 }
 
 extension View {
-    /// Short sentence-case label above a headline, e.g. "Know the signs of stroke".
-    func kicker(_ color: Color = .inkMuted, font: Font = .subheadline.weight(.semibold)) -> some View {
-        self.font(font)
-            .foregroundStyle(color)
-    }
-
     /// Raised content: Card fill, continuous corners and a hairline border. No shadow.
     func cardStyle(radius: CGFloat = Radius.card) -> some View {
         background {
             RoundedRectangle(cornerRadius: radius, style: .continuous)
                 .fill(.card)
                 .strokeBorder(.hairline, lineWidth: 0.5)
+        }
+    }
+
+    /// Pins controls to the bottom edge above scrolling content. On iOS 26 content fades softly
+    /// beneath it; earlier versions get a solid Surface backing so text never shows through.
+    @ViewBuilder
+    func bottomBar<Bar: View>(@ViewBuilder _ bar: () -> Bar) -> some View {
+        if #available(iOS 26.0, *) {
+            safeAreaBar(edge: .bottom, content: bar)
+        } else {
+            safeAreaInset(edge: .bottom) {
+                bar().background(.surface)
+            }
         }
     }
 

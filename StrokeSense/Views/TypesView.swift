@@ -52,7 +52,6 @@ struct TypesView: View {
         InfoTopicScreen(
             navigationTitle: "Types of Stroke",
             hero: TopicHero(
-                eyebrow: "Understand",
                 title: "Types of stroke",
                 summary: "Strokes are caused either by a blockage or by bleeding. A TIA is a temporary warning.",
                 systemImage: "brain.head.profile.fill"
@@ -61,7 +60,7 @@ struct TypesView: View {
         ) {
             TopicDetailList(details: types, selected: $selected)
         }
-        .sheet(item: $selected) { TopicDetailSheet(detail: $0, eyebrow: "Type of stroke") }
+        .sheet(item: $selected) { TopicDetailSheet(detail: $0) }
     }
 }
 

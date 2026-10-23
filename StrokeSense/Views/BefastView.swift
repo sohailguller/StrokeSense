@@ -29,7 +29,6 @@ struct BefastView: View {
         InfoTopicScreen(
             navigationTitle: "B.E. F.A.S.T.",
             hero: TopicHero(
-                eyebrow: "Recognize a stroke",
                 title: "B.E. F.A.S.T.",
                 summary: "Stroke symptoms come on suddenly. If you notice any one of these signs, call an ambulance immediately. Fast treatment can save brain function.",
                 systemImage: "bolt.heart.fill",

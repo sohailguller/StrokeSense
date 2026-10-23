@@ -64,7 +64,6 @@ struct TreatmentsView: View {
         InfoTopicScreen(
             navigationTitle: "Treatments",
             hero: TopicHero(
-                eyebrow: "Understand",
                 title: "Treatments",
                 summary: "Treatment depends on the type of stroke and how quickly it begins. The sooner, the better.",
                 systemImage: "cross.case.fill"
@@ -73,7 +72,7 @@ struct TreatmentsView: View {
         ) {
             TopicDetailList(details: treatments, selected: $selected)
         }
-        .sheet(item: $selected) { TopicDetailSheet(detail: $0, eyebrow: "Treatment") }
+        .sheet(item: $selected) { TopicDetailSheet(detail: $0) }
     }
 }
 

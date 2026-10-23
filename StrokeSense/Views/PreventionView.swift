@@ -29,7 +29,6 @@ struct PreventionView: View {
         InfoTopicScreen(
             navigationTitle: "Prevention",
             hero: TopicHero(
-                eyebrow: "Understand",
                 title: "Lower your risk",
                 summary: "Most strokes are linked to risk factors you can manage. These habits help at any age.",
                 systemImage: "shield.lefthalf.filled"

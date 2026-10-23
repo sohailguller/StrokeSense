@@ -14,6 +14,8 @@ enum AppTab: Hashable {
 /// Lets any screen switch tabs, e.g. a suggestion chip on Today opening Ask.
 final class AppRouter: ObservableObject {
     @Published var selectedTab: AppTab = .home
+    /// Set to open Ask with the keyboard up.
+    @Published var focusChatInput = false
 }
 
 struct NavigationTabView: View {

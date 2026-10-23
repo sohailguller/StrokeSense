@@ -54,13 +54,12 @@ struct HomeView: View {
         .background(.surface)
         .navigationTitle("StrokeSense")
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showProfile = true
-                } label: {
-                    AvatarView(image: store.user.profilePicture, size: 32)
-                }
-                .accessibilityLabel("Profile")
+            if #available(iOS 26.0, *) {
+                // The avatar is its own circle, so skip the glass circle iOS 26 puts behind toolbar items.
+                ToolbarItem(placement: .topBarTrailing) { profileButton }
+                    .sharedBackgroundVisibility(.hidden)
+            } else {
+                ToolbarItem(placement: .topBarTrailing) { profileButton }
             }
         }
         .navigationDestination(for: String.self) { route in
@@ -81,6 +80,16 @@ struct HomeView: View {
         .sheet(item: $playingVideo) { VideoPlayerSheet(video: $0) }
         .fullScreenCover(isPresented: $showQuiz) { GameView() }
         .safariSheet(url: $openArticle)
+    }
+
+    private var profileButton: some View {
+        Button {
+            showProfile = true
+        } label: {
+            AvatarView(image: store.user.profilePicture, size: 36)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Profile")
     }
 
     @ViewBuilder
@@ -166,9 +175,6 @@ private struct BeFastHeroCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.l) {
-            Text("Know the signs of stroke")
-                .kicker(.white.opacity(0.9))
-
             ZStack(alignment: .leading) {
                 // Every sign laid out invisibly so the card never changes height.
                 ForEach(signs.indices, id: \.self) { i in
@@ -233,37 +239,52 @@ private struct BeFastHeroCard: View {
     }
 }
 
-/// Entry point to the Stroke Expert. Each question switches to Ask and sends it.
+/// Entry point to the Stroke Expert: a field that opens Ask, plus suggested questions.
 private struct AskExpertCard: View {
     @EnvironmentObject private var router: AppRouter
     @EnvironmentObject private var session: ChatSession
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.m) {
-            Label {
-                Text("Stroke Expert")
-            } icon: {
-                ExpertMark(font: .subheadline)
-            }
-            .kicker(.accentColor)
-            Text("Have a question about stroke?")
-                .font(.cardTitle)
-                .foregroundStyle(.ink)
-
-            ScrollView(.horizontal) {
-                HStack(spacing: Spacing.xs) {
-                    ForEach(ChatSession.suggestions, id: \.self) { question in
-                        Button(question) {
-                            session.ask(question)
-                            router.selectedTab = .ask
-                        }
-                        .buttonStyle(.chip)
-                    }
+            HStack(alignment: .firstTextBaseline, spacing: Spacing.s) {
+                ExpertMark(font: .title2)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Stroke Expert")
+                        .font(.cardTitle)
+                        .foregroundStyle(.ink)
+                    Text("Plain-language answers about stroke")
+                        .font(.subheadline)
+                        .foregroundStyle(.inkMuted)
                 }
-                .padding(.horizontal, Spacing.l)
             }
-            .scrollIndicators(.hidden)
-            .padding(.horizontal, -Spacing.l)
+
+            Button {
+                router.focusChatInput = true
+                router.selectedTab = .ask
+            } label: {
+                HStack {
+                    Text("Ask a question")
+                        .font(.body)
+                        .foregroundStyle(.inkMuted)
+                    Spacer()
+                    Image(systemName: "arrow.up.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(.tint)
+                }
+                .padding(.leading, Spacing.m)
+                .padding(.trailing, Spacing.xs)
+                .frame(minHeight: 48)
+                .background(.surface, in: Capsule())
+                .overlay(Capsule().strokeBorder(.hairline, lineWidth: 0.5))
+                .contentShape(Capsule())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Ask the Stroke Expert a question")
+
+            SuggestionList(questions: Array(ChatSession.suggestions.prefix(2)), horizontalPadding: 0) { question in
+                session.ask(question)
+                router.selectedTab = .ask
+            }
         }
         .padding(Spacing.l)
         .cardStyle(radius: Radius.hero)

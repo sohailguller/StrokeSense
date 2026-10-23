@@ -132,6 +132,7 @@ final class ChatSession: ObservableObject {
 
 struct ChatView: View {
     @EnvironmentObject private var session: ChatSession
+    @EnvironmentObject private var router: AppRouter
     @State private var inputText = ""
     @FocusState private var inputFocused: Bool
 
@@ -140,40 +141,30 @@ struct ChatView: View {
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                if session.messages.isEmpty {
-                    ChatIntro { session.ask($0) }
-                        .padding(.horizontal, Spacing.l)
-                        .padding(.top, Spacing.xl)
-                } else {
-                    LazyVStack(alignment: .leading, spacing: Spacing.l) {
-                        ForEach(session.messages) { message in
-                            ChatRow(message: message)
-                        }
-                        if session.isLoading {
-                            TypingIndicatorRow()
-                        }
-                        if let error = session.errorMessage {
-                            ChatErrorRow(message: error) { session.retry() }
-                        }
-                        Color.clear.frame(height: 1).id(bottomID)
-                    }
-                    .padding(.horizontal, Spacing.l)
-                    .padding(.vertical, Spacing.m)
-                }
+                conversation
             }
+            // Swipe down on the conversation to lower the keyboard, as in Messages.
             .scrollDismissesKeyboard(.interactively)
             .defaultScrollAnchor(session.messages.isEmpty ? .top : .bottom)
             .onChange(of: session.messages.count) { _, _ in scrollToBottom(proxy) }
             .onChange(of: session.isLoading) { _, _ in scrollToBottom(proxy) }
         }
-        .safeAreaInset(edge: .bottom) {
+        .bottomBar {
             ChatInputBar(text: $inputText, isFocused: $inputFocused, isLoading: session.isLoading) {
                 let question = inputText
                 inputText = ""
                 session.ask(question)
             }
         }
+        .onDisappear { inputFocused = false }
         .background(.surface)
+        // Opened from the Home card's field: bring up the keyboard once the tab has appeared.
+        .task(id: router.focusChatInput) {
+            guard router.focusChatInput else { return }
+            try? await Task.sleep(for: .milliseconds(350))
+            inputFocused = true
+            router.focusChatInput = false
+        }
         // If permission was declined, put the unsent question back in the text field.
         .onChange(of: session.pendingQuestion) { old, new in
             if new == nil, let old, session.messages.last?.content != old {
@@ -193,6 +184,30 @@ struct ChatView: View {
             }
         }
         .sensoryFeedback(.impact(weight: .light), trigger: session.messages.filter { $0.role == "user" }.count)
+    }
+
+    @ViewBuilder
+    private var conversation: some View {
+        if session.messages.isEmpty {
+            ChatIntro { session.ask($0) }
+                .padding(.horizontal, Spacing.l)
+                .padding(.top, Spacing.xl)
+        } else {
+            LazyVStack(alignment: .leading, spacing: Spacing.l) {
+                ForEach(session.messages) { message in
+                    ChatRow(message: message)
+                }
+                if session.isLoading {
+                    TypingIndicatorRow()
+                }
+                if let error = session.errorMessage {
+                    ChatErrorRow(message: error) { session.retry() }
+                }
+                Color.clear.frame(height: 1).id(bottomID)
+            }
+            .padding(.horizontal, Spacing.l)
+            .padding(.vertical, Spacing.m)
+        }
     }
 
     private func scrollToBottom(_ proxy: ScrollViewProxy) {
@@ -221,32 +236,52 @@ private struct ChatIntro: View {
                 .font(.body)
                 .foregroundStyle(.inkMuted)
 
-            VStack(spacing: 0) {
-                ForEach(Array(ChatSession.suggestions.enumerated()), id: \.element) { index, question in
-                    Button {
-                        onSelect(question)
-                    } label: {
-                        HStack {
-                            Text(question)
-                                .font(.body)
-                                .foregroundStyle(.ink)
-                                .multilineTextAlignment(.leading)
-                            Spacer()
-                            Image(systemName: "arrow.up.right")
-                                .font(.footnote.weight(.semibold))
-                                .foregroundStyle(.tint)
-                        }
-                        .padding(Spacing.m)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    if index < ChatSession.suggestions.count - 1 {
-                        Rectangle().fill(.hairline).frame(height: 0.5).padding(.leading, Spacing.m)
-                    }
+            SuggestionList(questions: ChatSession.suggestions, onSelect: onSelect)
+                .cardStyle()
+                .padding(.top, Spacing.s)
+
+            Text("AI answers can be wrong and aren't medical advice.")
+                .font(.footnote)
+                .foregroundStyle(.inkMuted)
+        }
+    }
+}
+
+/// Suggested questions as tappable rows separated by hairlines.
+struct SuggestionList: View {
+    let questions: [String]
+    var horizontalPadding: CGFloat = Spacing.m
+    let onSelect: (String) -> Void
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(questions.enumerated()), id: \.element) { index, question in
+                if index > 0 {
+                    Rectangle()
+                        .fill(.hairline)
+                        .frame(height: 0.5)
+                        .padding(.leading, horizontalPadding)
                 }
+                Button {
+                    onSelect(question)
+                } label: {
+                    HStack(spacing: Spacing.s) {
+                        Text(question)
+                            .font(.body)
+                            .foregroundStyle(.ink)
+                            .multilineTextAlignment(.leading)
+                        Spacer(minLength: 0)
+                        Image(systemName: "arrow.up.right")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.tint)
+                            .accessibilityHidden(true)
+                    }
+                    .padding(.horizontal, horizontalPadding)
+                    .padding(.vertical, Spacing.m)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
             }
-            .cardStyle()
-            .padding(.top, Spacing.s)
         }
     }
 }
@@ -263,34 +298,28 @@ private struct ChatInputBar: View {
     }
 
     var body: some View {
-        VStack(spacing: Spacing.xs) {
-            HStack(alignment: .bottom, spacing: Spacing.xs) {
-                TextField("Ask about stroke", text: $text, axis: .vertical)
-                    .lineLimit(1...5)
-                    .focused(isFocused)
-                    .submitLabel(.send)
-                    .onSubmit { if canSend { onSend() } }
-                    .padding(.leading, Spacing.m)
-                    .padding(.vertical, 12)
+        HStack(alignment: .bottom, spacing: Spacing.xs) {
+            TextField("Ask about stroke", text: $text, axis: .vertical)
+                .lineLimit(1...5)
+                .focused(isFocused)
+                .submitLabel(.send)
+                .onSubmit { if canSend { onSend() } }
+                .padding(.leading, Spacing.m)
+                .padding(.vertical, 12)
 
-                Button(action: onSend) {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .font(.title)
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(.white, canSend ? AnyShapeStyle(.brandPrimary) : AnyShapeStyle(.inkMuted.opacity(0.4)))
-                }
-                .disabled(!canSend)
-                .padding(5)
-                .accessibilityLabel("Send")
+            Button(action: onSend) {
+                Image(systemName: "arrow.up.circle.fill")
+                    .font(.title)
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.white, canSend ? AnyShapeStyle(.brandPrimary) : AnyShapeStyle(.inkMuted.opacity(0.4)))
             }
-            .floatingGlass(in: RoundedRectangle(cornerRadius: 24, style: .continuous))
-
-            Text("AI answers can be wrong and aren't medical advice. Questions are processed by OpenAI and may be used to improve their models.")
-                .font(.caption2)
-                .foregroundStyle(.inkMuted)
-                .multilineTextAlignment(.center)
+            .disabled(!canSend)
+            .padding(5)
+            .accessibilityLabel("Send")
         }
+        .floatingGlass(in: RoundedRectangle(cornerRadius: 24, style: .continuous))
         .padding(.horizontal, Spacing.m)
+        .padding(.top, Spacing.xs)
         .padding(.bottom, Spacing.xs)
     }
 }
@@ -341,6 +370,7 @@ private struct ChatErrorRow: View {
         ChatView()
     }
     .environmentObject(ChatSession())
+    .environmentObject(AppRouter())
 }
 
 /// Shown once, before the first question is sent to OpenAI.

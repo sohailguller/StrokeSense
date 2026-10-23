@@ -329,9 +329,8 @@ struct Source: Identifiable, Hashable {
     static let nhlbiRecovery = Source(name: "NIH NHLBI: Recovery after stroke", url: URL(string: "https://www.nhlbi.nih.gov/health/stroke/recovery")!)
 }
 
-/// Header for a topic: symbol, kicker, headline and summary.
+/// Header for a topic: symbol, headline and summary.
 struct TopicHero: View {
-    let eyebrow: String
     let title: String
     let summary: String
     let systemImage: String
@@ -348,7 +347,6 @@ struct TopicHero: View {
                 .symbolEffect(.bounce, value: appeared)
                 .padding(.bottom, Spacing.xs)
                 .accessibilityHidden(true)
-            Text(eyebrow).kicker(tint)
             Text(title)
                 .font(.heroTitle)
                 .foregroundStyle(.ink)
@@ -496,14 +494,13 @@ struct TopicDetail: Identifiable {
 
 struct TopicDetailSheet: View {
     let detail: TopicDetail
-    let eyebrow: String
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.l) {
-                    TopicHero(eyebrow: eyebrow, title: detail.title, summary: detail.summary, systemImage: detail.systemImage)
+                    TopicHero(title: detail.title, summary: detail.summary, systemImage: detail.systemImage)
                     Text(detail.body)
                         .font(.body)
                         .foregroundStyle(.ink)
@@ -569,14 +566,15 @@ struct ArticleRow: View {
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: Spacing.xxs) {
-                Text(sourceName)
-                    .kicker(font: .caption.weight(.semibold))
-                    .lineLimit(1)
                 Text(article.title)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.ink)
                     .lineLimit(3)
                     .multilineTextAlignment(.leading)
+                Text(sourceName)
+                    .font(.caption)
+                    .foregroundStyle(.inkMuted)
+                    .lineLimit(1)
             }
             Spacer(minLength: 0)
         }
