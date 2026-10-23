@@ -98,6 +98,11 @@ private struct ChunkyButton: View {
     }
 }
 
+extension Color {
+    /// The "3D" edge under white buttons on colored cards: neutral gray, never tinted pink.
+    static let whiteButtonEdge = Color(white: 0.8)
+}
+
 /// Full-width filled button. Defaults to the brand color.
 struct PrimaryButtonStyle: ButtonStyle {
     var color: Color = .brandPrimary
@@ -162,9 +167,10 @@ struct FeatureBackground: View {
                     [0, 0.5], [0.62, 0.42], [1, 0.5],
                     [0, 1], [0.5, 1], [1, 1]
                 ],
+                // Highlights stay subtle: white mixed into red quickly turns pink.
                 colors: [
-                    base.mix(with: highlight, by: 0.12), base.mix(with: highlight, by: 0.06), base,
-                    base.mix(with: highlight, by: 0.03), base.mix(with: highlight, by: 0.08), base.mix(with: shade, by: 0.12),
+                    base.mix(with: highlight, by: 0.05), base.mix(with: highlight, by: 0.02), base,
+                    base, base.mix(with: highlight, by: 0.03), base.mix(with: shade, by: 0.12),
                     base.mix(with: shade, by: 0.1), base.mix(with: shade, by: 0.2), base.mix(with: shade, by: 0.32)
                 ]
             )
@@ -209,7 +215,7 @@ struct ShineSweep: View {
     var body: some View {
         GeometryReader { geo in
             LinearGradient(
-                colors: [.clear, .white.opacity(0.22), .clear],
+                colors: [.clear, .white.opacity(0.14), .clear],
                 startPoint: .leading,
                 endPoint: .trailing
             )

@@ -195,7 +195,8 @@ private struct BeFastHeroCard: View {
                         VStack(spacing: Spacing.xxs) {
                             Text(signs[i].letter)
                                 .font(.letterMark)
-                                .foregroundStyle(.white.opacity(i == index ? 1 : 0.45))
+                                // Inactive letters recede into a deeper red instead of fading to pink.
+                                .foregroundStyle(i == index ? AnyShapeStyle(.white) : AnyShapeStyle(.black.opacity(0.28)))
                             Capsule()
                                 .fill(.clear)
                                 .frame(width: 20, height: 4)
@@ -220,7 +221,7 @@ private struct BeFastHeroCard: View {
             NavigationLink("Learn the Signs", value: "befast")
                 .buttonStyle(ChunkyButtonStyle(
                     fill: .white,
-                    edge: Color.white.mix(with: .brandPrimary, by: 0.45),
+                    edge: .whiteButtonEdge,
                     label: .brandPrimary
                 ))
         }
@@ -275,16 +276,7 @@ private struct AskExpertCard: View {
                 router.selectedTab = .ask
             } label: {
                 HStack {
-                    if session.draft.isEmpty {
-                        TypingPrompt(prompts: Self.examples, current: $typedQuestion)
-                    } else {
-                        // An unsent question from Ask: show it as-is instead of animating over it.
-                        Text(session.draft)
-                            .font(.body)
-                            .foregroundStyle(.ink)
-                            .lineLimit(1)
-                            .truncationMode(.head)
-                    }
+                    TypingPrompt(prompts: Self.examples, current: $typedQuestion)
                     Spacer(minLength: Spacing.xs)
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.title2)
@@ -339,7 +331,10 @@ private struct TypingPrompt: View {
         .task { await run() }
     }
 
+    /// Restarts from an empty field each time the card appears (e.g. returning to Home), and
+    /// sets the exact text on every step so leftover characters can never pile up.
     private func run() async {
+        shown = ""
         var index = 0
         while !Task.isCancelled {
             let prompt = prompts[index]
@@ -348,13 +343,13 @@ private struct TypingPrompt: View {
                 shown = prompt
                 guard await pause(3) else { return }
             } else {
-                for character in prompt {
-                    shown.append(character)
+                for count in 1...prompt.count {
+                    shown = String(prompt.prefix(count))
                     guard await pause(0.05) else { return }
                 }
                 guard await pause(2) else { return }
-                while !shown.isEmpty {
-                    shown.removeLast()
+                for count in stride(from: prompt.count - 1, through: 0, by: -1) {
+                    shown = String(prompt.prefix(count))
                     guard await pause(0.015) else { return }
                 }
                 guard await pause(0.35) else { return }
@@ -418,7 +413,7 @@ private struct QuizCard: View {
             Button("Start Quiz", action: onStart)
                 .buttonStyle(ChunkyButtonStyle(
                     fill: .white,
-                    edge: Color.white.mix(with: .practice, by: 0.45),
+                    edge: .whiteButtonEdge,
                     label: .practice
                 ))
                 .accessibilityHint("Starts a 10 question quiz")

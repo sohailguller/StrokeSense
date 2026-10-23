@@ -10,6 +10,7 @@
 //  - BrandSoft     Warm neutral tint for quiet surfaces (not pink; no pastels).
 //  - Practice      Deep burgundy for the quiz: same red family as the brand, no new hues.
 //  - Emergency     Reserved for emergency guidance and BE FAST. Never decorative.
+//  All reds are true reds (no pink/blue cast) in both modes; dark mode uses Apple's #FF453A.
 //  - Success       Correct quiz answers.
 //  - Ink / InkMuted  Primary and secondary text.
 //  - Surface / Card / Hairline  Screen background, raised content, 0.5pt borders.

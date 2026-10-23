@@ -80,7 +80,7 @@ struct ProfileView: View {
                 } header: {
                     Text("Stroke Expert")
                 } footer: {
-                    Text("Questions you type are sent to OpenAI to write answers. Suggested questions stay on your iPhone.")
+                    Text("Turn this off to stop using the Stroke Expert. Questions are sent to OpenAI only while it's on.")
                 }
 
                 Section {

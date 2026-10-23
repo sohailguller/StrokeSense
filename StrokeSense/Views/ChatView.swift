@@ -13,8 +13,8 @@ final class ChatSession: ObservableObject {
     @Published private(set) var messages: [ChatMessage] = []
     @Published private(set) var isLoading = false
     @Published private(set) var errorMessage: String?
-    /// A question waiting on the user's permission to send it to OpenAI.
-    @Published var pendingQuestion: String?
+    /// A question asked (e.g. from the Home card) before the user agreed; sent once they do.
+    @Published private(set) var pendingQuestion: String?
     /// Unsent text in Ask's input field. Shared so the Home card can show it instead of examples.
     @Published var draft = ""
 
@@ -77,8 +77,8 @@ final class ChatSession: ObservableObject {
         let question = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !question.isEmpty, !isLoading else { return }
 
-        // Built-in answers stay on the device; anything else needs permission first.
-        if Self.cannedAnswers[question] == nil && !hasConsent {
+        // Nothing is answered until the user has agreed; Ask shows the agreement meanwhile.
+        guard hasConsent else {
             pendingQuestion = question
             return
         }
@@ -98,10 +98,6 @@ final class ChatSession: ObservableObject {
         let question = pendingQuestion
         pendingQuestion = nil
         if let question { ask(question) }
-    }
-
-    func declineConsent() {
-        pendingQuestion = nil
     }
 
     func retry() {
@@ -136,17 +132,33 @@ final class ChatSession: ObservableObject {
 struct ChatView: View {
     @EnvironmentObject private var session: ChatSession
     @EnvironmentObject private var router: AppRouter
+    @AppStorage(ChatSession.consentKey) private var hasConsent = false
     @FocusState private var inputFocused: Bool
 
     private let bottomID = "bottom"
 
     var body: some View {
+        // The agreement is the first thing on Ask, not tucked away in settings: nothing can be
+        // asked until the user has read it and agreed.
+        if hasConsent {
+            chat
+        } else {
+            AIConsentView()
+                .navigationTitle("Stroke Expert")
+                .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+
+    private var chat: some View {
         ScrollViewReader { proxy in
             ScrollView {
                 conversation
             }
-            // Swipe down on the conversation to lower the keyboard, as in Messages.
-            .scrollDismissesKeyboard(.interactively)
+            // Any scroll of the conversation lowers the keyboard. `.interactively` needed a drag
+            // all the way into the keyboard, which left people feeling stuck.
+            .scrollDismissesKeyboard(.immediately)
+            // Let short content (the empty state) scroll too, so the swipe always registers.
+            .scrollBounceBehavior(.always)
             .defaultScrollAnchor(session.messages.isEmpty ? .top : .bottom)
             .onChange(of: session.messages.count) { _, _ in scrollToBottom(proxy) }
             .onChange(of: session.isLoading) { _, _ in scrollToBottom(proxy) }
@@ -166,12 +178,6 @@ struct ChatView: View {
             try? await Task.sleep(for: .milliseconds(350))
             inputFocused = true
             router.focusChatInput = false
-        }
-        // If permission was declined, put the unsent question back in the text field.
-        .onChange(of: session.pendingQuestion) { old, new in
-            if new == nil, let old, session.messages.last?.content != old {
-                session.draft = old
-            }
         }
         .navigationTitle("Stroke Expert")
         .navigationBarTitleDisplayMode(.inline)
@@ -371,8 +377,8 @@ private struct ChatErrorRow: View {
     .environmentObject(AppRouter())
 }
 
-/// Shown once, before the first question is sent to OpenAI.
-struct AIConsentSheet: View {
+/// Fills the Ask tab until the user agrees. Turning sharing off in Profile brings it back.
+private struct AIConsentView: View {
     @EnvironmentObject private var session: ChatSession
 
     var body: some View {
@@ -382,9 +388,13 @@ struct AIConsentSheet: View {
                 Text("Before you ask")
                     .font(.heroTitle)
                     .foregroundStyle(.ink)
+                Text("The Stroke Expert answers questions about stroke in plain language, using AI.")
+                    .font(.body)
+                    .foregroundStyle(.inkMuted)
 
                 VStack(alignment: .leading, spacing: Spacing.m) {
                     point("arrow.up.message.fill", "Your questions are sent to OpenAI to write the answers. OpenAI may use them to improve its models.")
+                    point("exclamationmark.bubble.fill", "AI answers can be wrong. Check important information with a doctor.")
                     point("person.crop.circle.badge.xmark", "Don't include your name or personal health details.")
                     point("stethoscope", "Answers are general information, not medical advice. In an emergency, call 911 or your local emergency number.")
                 }
@@ -393,20 +403,13 @@ struct AIConsentSheet: View {
             .padding(.top, Spacing.m)
         }
         .scrollBounceBehavior(.basedOnSize)
-        .safeAreaInset(edge: .bottom) {
-            VStack(spacing: Spacing.s) {
-                Button("Agree and Continue") { session.acceptConsent() }
-                    .buttonStyle(.primary)
-                Button("Not Now") { session.declineConsent() }
-                    .buttonStyle(.secondary)
-            }
-            .padding(.horizontal, Spacing.l)
-            .padding(.bottom, Spacing.s)
-            .background(.surface)
+        .bottomBar {
+            Button("Agree and Continue") { session.acceptConsent() }
+                .buttonStyle(.primary)
+                .padding(.horizontal, Spacing.l)
+                .padding(.bottom, Spacing.s)
         }
         .background(.surface)
-        .interactiveDismissDisabled()
-        .presentationDetents([.large])
     }
 
     private func point(_ systemImage: String, _ text: String) -> some View {
