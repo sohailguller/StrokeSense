@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		593B49422C3C9513001E743F /* StrokeSenseApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593B49412C3C9513001E743F /* StrokeSenseApp.swift */; };
 		593B49462C3C9514001E743F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 593B49452C3C9514001E743F /* Assets.xcassets */; };
+		5AA1C0DE0000000000000002 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 5AA1C0DE0000000000000001 /* AppIcon.icon */; };
 		593B49492C3C9514001E743F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 593B49482C3C9514001E743F /* Preview Assets.xcassets */; };
 		593B49532C3C9514001E743F /* StrokeSenseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593B49522C3C9514001E743F /* StrokeSenseTests.swift */; };
 		593B495D2C3C9515001E743F /* StrokeSenseUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593B495C2C3C9515001E743F /* StrokeSenseUITests.swift */; };
@@ -72,6 +73,7 @@
 		593B493E2C3C9513001E743F /* StrokeSense.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StrokeSense.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		593B49412C3C9513001E743F /* StrokeSenseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeSenseApp.swift; sourceTree = "<group>"; };
 		593B49452C3C9514001E743F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5AA1C0DE0000000000000001 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		593B49482C3C9514001E743F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		593B494E2C3C9514001E743F /* StrokeSenseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StrokeSenseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		593B49522C3C9514001E743F /* StrokeSenseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeSenseTests.swift; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				593B496B2C3C952A001E743F /* Models */,
 				593B49BA2C3E1725001E743F /* Resources */,
 				593B49452C3C9514001E743F /* Assets.xcassets */,
+				5AA1C0DE0000000000000001 /* AppIcon.icon */,
 				593B49472C3C9514001E743F /* Preview Content */,
 			);
 			path = StrokeSense;
@@ -377,6 +380,7 @@
 				593B49492C3C9514001E743F /* Preview Assets.xcassets in Resources */,
 				593B49BC2C3E177B001E743F /* Questions.json in Resources */,
 				593B49462C3C9514001E743F /* Assets.xcassets in Resources */,
+				5AA1C0DE0000000000000002 /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
