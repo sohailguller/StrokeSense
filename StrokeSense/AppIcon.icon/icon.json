@@ -35,14 +35,14 @@
             { "appearance" : "dark", "value" : { "solid" : "srgb:1.00000,0.27059,0.22745,1.00000" } }
           ],
           "glass" : true,
-          "image-name" : "Brain.png",
-          "name" : "Brain"
+          "image-name" : "1_Left.svg",
+          "name" : "Left hemisphere"
         }
       ],
-      "name" : "Brain",
+      "name" : "Front",
       "shadow" : { "kind" : "neutral", "opacity" : 0.5 },
       "specular" : true,
-      "translucency" : { "enabled" : true, "value" : 0.3 }
+      "translucency" : { "enabled" : true, "value" : 0.2 }
     },
     {
       "layers" : [
@@ -52,15 +52,18 @@
             { "appearance" : "dark", "value" : { "solid" : "srgb:1.00000,0.27059,0.22745,1.00000" } }
           ],
           "glass" : true,
-          "image-name" : "Cerebellum.png",
-          "name" : "Cerebellum",
-          "opacity" : 0.82
+          "image-name" : "0_Right.svg",
+          "name" : "Right hemisphere",
+          "opacity-specializations" : [
+            { "value" : 0.45 },
+            { "appearance" : "dark", "value" : 0.6 }
+          ]
         }
       ],
-      "name" : "Cerebellum",
+      "name" : "Back",
       "shadow" : { "kind" : "neutral", "opacity" : 0.5 },
       "specular" : true,
-      "translucency" : { "enabled" : true, "value" : 0.3 }
+      "translucency" : { "enabled" : true, "value" : 0.5 }
     }
   ],
   "supported-platforms" : {
