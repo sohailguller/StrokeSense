@@ -1,4 +1,5 @@
 import { handleNews } from "./news.js";
+import { handlePrivacy } from "./privacy.js";
 
 // StrokeSense chat proxy (Cloudflare Worker, free plan).
 // Holds the OpenAI key and system prompt server-side, and only answers requests carrying
@@ -23,8 +24,10 @@ let jwksCache = { keys: null, fetchedAt: 0 };
 
 export default {
   async fetch(request, env, ctx) {
-    if (request.method === "GET" && new URL(request.url).pathname === "/news") {
-      return handleNews(request, ctx);
+    if (request.method === "GET") {
+      const path = new URL(request.url).pathname;
+      if (path === "/news") return handleNews(request, ctx);
+      if (path === "/privacy") return handlePrivacy();
     }
 
     if (request.method !== "POST") {

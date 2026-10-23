@@ -52,7 +52,7 @@ struct HomeView: View {
             .frame(maxWidth: .infinity)
         }
         .background(.surface)
-        .navigationTitle("StrokeSense")
+        .navigationTitle("Home")
         .toolbar {
             if #available(iOS 26.0, *) {
                 // The avatar is its own circle, so skip the glass circle iOS 26 puts behind toolbar items.

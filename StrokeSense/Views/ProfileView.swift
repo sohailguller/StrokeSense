@@ -7,15 +7,19 @@
 import SwiftUI
 import PhotosUI
 
-/// Profile and app information, presented as a sheet from Today.
+/// Profile, settings and app information, presented as a sheet from Home.
 struct ProfileView: View {
     @EnvironmentObject private var store: UserStore
     @Environment(\.dismiss) private var dismiss
     @State private var photoItem: PhotosPickerItem?
+    @State private var showPhotoPicker = false
     @State private var cropImage: CropImage?
     @State private var openURL: URL?
     @AppStorage("appearance") private var appearance = AppAppearance.system
     @AppStorage(ChatSession.consentKey) private var shareWithOpenAI = false
+
+    /// Hosted by the StrokeSense Worker (worker/src/privacy.js); also the App Store Connect privacy URL.
+    private static let privacyPolicyURL = URL(string: "https://strokesense-chat.ims03g.workers.dev/privacy")!
 
     private var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
@@ -24,70 +28,79 @@ struct ProfileView: View {
     var body: some View {
         let hasPhoto = !store.user.profilePicture.isSymbolImage
         NavigationStack {
+            // Laid out like the iOS Settings app: identity first, one setting per row with its
+            // current value on the right, a one-line footer only where a setting needs explaining.
             Form {
                 Section {
-                    VStack(spacing: Spacing.s) {
+                    VStack(spacing: Spacing.xs) {
                         AvatarView(image: store.user.profilePicture, size: 96)
-                        PhotosPicker(selection: $photoItem, matching: .images) {
-                            Text(hasPhoto ? "Change Photo" : "Add Photo")
-                                .font(.subheadline.weight(.semibold))
-                        }
-                        .buttonStyle(.borderless)
-                        .tint(.accentColor)
-                        if hasPhoto {
-                            Button("Remove Photo", role: .destructive) {
-                                store.user.profilePicture = User.default.profilePicture
-                                store.objectWillChange.send()
+                        Menu {
+                            Button(hasPhoto ? "Choose New Photo" : "Choose Photo", systemImage: "photo.on.rectangle") {
+                                showPhotoPicker = true
                             }
-                            .font(.subheadline)
-                            .buttonStyle(.borderless)
+                            if hasPhoto {
+                                Button("Remove Photo", systemImage: "trash", role: .destructive) {
+                                    store.user.profilePicture = User.default.profilePicture
+                                    store.objectWillChange.send()
+                                }
+                            }
+                        } label: {
+                            Text(hasPhoto ? "Edit" : "Add Photo")
+                                .font(.subheadline.weight(.semibold))
                         }
                     }
                     .frame(maxWidth: .infinity)
                     .listRowBackground(Color.clear)
                 }
 
-                Section("Name") {
-                    TextField("Your name", text: $store.user.username)
-                        .textContentType(.givenName)
-                        .submitLabel(.done)
-                }
-
-                Section("Appearance") {
+                Section {
+                    LabeledContent("Name") {
+                        TextField("Optional", text: $store.user.username)
+                            .multilineTextAlignment(.trailing)
+                            .textContentType(.givenName)
+                            .submitLabel(.done)
+                    }
                     Picker("Appearance", selection: $appearance) {
                         ForEach(AppAppearance.allCases) { option in
                             Text(option.title).tag(option)
                         }
                     }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
                 }
 
-                Section("Stroke Expert") {
-                    Toggle("Share questions with OpenAI", isOn: $shareWithOpenAI)
-                    NavigationLink("How the Stroke Expert works") {
+                Section {
+                    Toggle("Share Questions with OpenAI", isOn: $shareWithOpenAI)
+                    NavigationLink("How the Stroke Expert Works") {
                         InfoPage(title: "How the Stroke Expert Works", paragraphs: [
                             "The Stroke Expert uses an AI model from OpenAI to answer questions about stroke in plain language.",
-                            "When you ask your own question, it's sent to OpenAI to write the answer. OpenAI may use it to improve its models. The suggested questions are answered on your phone and aren't sent anywhere.",
+                            "When you ask your own question, it's sent to OpenAI to write the answer. OpenAI may use it to improve its models. The suggested questions are answered on your iPhone and aren't sent anywhere.",
                             "Don't include your name or personal health details in questions.",
-                            "AI answers can be wrong. Check important information with a doctor.",
-                            "Turn off Share questions with OpenAI to stop sending questions. You'll be asked again the next time you ask your own question."
+                            "AI answers can be wrong. Check important information with a doctor."
                         ])
                     }
+                } header: {
+                    Text("Stroke Expert")
+                } footer: {
+                    Text("Questions you type are sent to OpenAI to write answers. Suggested questions stay on your iPhone.")
                 }
 
-                Section("About") {
-                    NavigationLink("Medical disclaimer") {
+                Section {
+                    NavigationLink("Medical Disclaimer") {
                         InfoPage(title: "Medical Disclaimer", paragraphs: [
                             "StrokeSense provides general education about stroke. It is not medical advice and doesn't replace a doctor.",
                             "Talk to a doctor about your own health, symptoms or treatment.",
                             "If you notice signs of a stroke, call 911 or your local emergency number right away."
                         ])
                     }
-                    Button("Where our information comes from") { openURL = Source.nhlbiOverview.url }
+                    Button("Privacy Policy") { openURL = Self.privacyPolicyURL }
+                        .foregroundStyle(.ink)
+                    Button("Sources") { openURL = Source.nhlbiOverview.url }
+                        .foregroundStyle(.ink)
                     LabeledContent("Version", value: appVersion)
+                } header: {
+                    Text("About")
                 }
             }
+            .photosPicker(isPresented: $showPhotoPicker, selection: $photoItem, matching: .images)
             .scrollContentBackground(.hidden)
             .background(.surface)
             .tint(.accentColor)
