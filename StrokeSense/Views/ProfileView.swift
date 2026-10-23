@@ -81,7 +81,7 @@ struct ProfileView: View {
                         InfoPage(title: "Medical Disclaimer", paragraphs: [
                             "StrokeSense provides general education about stroke. It is not medical advice and doesn't replace a doctor.",
                             "Talk to a doctor about your own health, symptoms or treatment.",
-                            "If you notice signs of a stroke, call an ambulance right away."
+                            "If you notice signs of a stroke, call 911 or your local emergency number right away."
                         ])
                     }
                     Button("Where our information comes from") { openURL = Source.nhlbiOverview.url }

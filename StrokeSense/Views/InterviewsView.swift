@@ -28,12 +28,12 @@ struct InterviewsView: View {
                 if viewModel.isLoading {
                     ProgressView()
                 } else {
-                    ContentUnavailableView("No videos yet", systemImage: "play.rectangle", description: Text("Pull down to check again."))
+                    ContentUnavailableView("No episodes yet", systemImage: "headphones", description: Text("Pull down to check again."))
                 }
             }
         }
         .background(.surface)
-        .navigationTitle("Videos")
+        .navigationTitle("Podcast Episodes")
         .refreshable { viewModel.fetchVideos(force: true) }
         .onAppear { viewModel.fetchVideos() }
         .sheet(item: $playingVideo) { VideoPlayerSheet(video: $0) }

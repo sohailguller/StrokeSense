@@ -34,8 +34,13 @@ struct EducationView: View {
                 NavigationLink {
                     InterviewsView(viewModel: videoVM)
                 } label: {
-                    LearnRow(title: "Videos", subtitle: "Stories and explainers", systemImage: "play.rectangle.fill")
+                    LearnRow(title: "Podcast Episodes", subtitle: "Conversations about stroke", systemImage: "headphones")
                 }
+            } header: {
+                Text("Listen")
+            }
+
+            Section {
                 Button {
                     showQuiz = true
                 } label: {

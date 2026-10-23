@@ -8,6 +8,7 @@
 
 import SwiftUI
 import SafariServices
+import CoreImage.CIFilterBuiltins
 
 // MARK: - Section header
 
@@ -46,32 +47,57 @@ extension SectionHeader where Destination == EmptyView {
 
 // MARK: - Buttons
 
-/// Full-width filled capsule. Defaults to the brand color.
-struct PrimaryButtonStyle: ButtonStyle {
-    var color: Color = .brandPrimary
+/// Chunky press-down button, Duolingo style: a solid darker edge sits under the face,
+/// and the face drops onto it while pressed. Flat colors only, no blur.
+struct ChunkyButtonStyle: ButtonStyle {
+    var fill: Color
+    var edge: Color
+    var label: Color
+    var border: Color? = nil
     @Environment(\.isEnabled) private var isEnabled
 
+    private let depth: CGFloat = 4
+
     func makeBody(configuration: Configuration) -> some View {
+        let pressed = configuration.isPressed
         configuration.label
             .font(.headline)
-            .foregroundStyle(.white)
+            .foregroundStyle(label)
             .frame(maxWidth: .infinity, minHeight: 50)
-            .background(color.opacity(isEnabled ? 1 : 0.35), in: Capsule())
-            .opacity(configuration.isPressed ? 0.85 : 1)
-            .scaleEffect(configuration.isPressed ? 0.98 : 1)
-            .animation(.snappy(duration: 0.2), value: configuration.isPressed)
+            .background {
+                Capsule()
+                    .fill(fill)
+                    .overlay {
+                        if let border { Capsule().strokeBorder(border, lineWidth: 1.5) }
+                    }
+            }
+            .offset(y: pressed ? depth : 0)
+            .background {
+                Capsule()
+                    .fill(edge)
+                    .offset(y: depth)
+            }
+            .padding(.bottom, depth)
+            .opacity(isEnabled ? 1 : 0.4)
+            .animation(.snappy(duration: 0.12), value: pressed)
     }
 }
 
-/// Full-width outlined capsule for secondary actions.
+/// Full-width filled button. Defaults to the brand color.
+struct PrimaryButtonStyle: ButtonStyle {
+    var color: Color = .brandPrimary
+
+    func makeBody(configuration: Configuration) -> some View {
+        ChunkyButtonStyle(fill: color, edge: color.mix(with: .black, by: 0.3), label: .white)
+            .makeBody(configuration: configuration)
+    }
+}
+
+/// Full-width outlined button for secondary actions.
 struct SecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.headline)
-            .foregroundStyle(.tint)
-            .frame(maxWidth: .infinity, minHeight: 50)
-            .background(Capsule().fill(.card).strokeBorder(.hairline, lineWidth: 1))
-            .opacity(configuration.isPressed ? 0.7 : 1)
+        ChunkyButtonStyle(fill: .card, edge: .hairline, label: .accentColor, border: .hairline)
+            .makeBody(configuration: configuration)
     }
 }
 
@@ -98,6 +124,115 @@ extension ButtonStyle where Self == SecondaryButtonStyle {
 
 extension ButtonStyle where Self == ChipButtonStyle {
     static var chip: ChipButtonStyle { ChipButtonStyle() }
+}
+
+// MARK: - Surfaces
+
+/// Depth for feature cards: a soft mesh of shades of one color, fine grain on top, and an
+/// optional light sweep. Shades come from the base color, so dark mode adapts on its own.
+/// Light surfaces should pass a tint as `shade` (e.g. BrandSoft) instead of darkening to gray.
+struct FeatureBackground: View {
+    var base: Color
+    var highlight: Color = .white
+    var shade: Color = .black
+    var shine = false
+
+    var body: some View {
+        ZStack {
+            MeshGradient(
+                width: 3,
+                height: 3,
+                points: [
+                    [0, 0], [0.5, 0], [1, 0],
+                    [0, 0.5], [0.62, 0.42], [1, 0.5],
+                    [0, 1], [0.5, 1], [1, 1]
+                ],
+                colors: [
+                    base.mix(with: highlight, by: 0.12), base.mix(with: highlight, by: 0.06), base,
+                    base.mix(with: highlight, by: 0.03), base.mix(with: highlight, by: 0.08), base.mix(with: shade, by: 0.12),
+                    base.mix(with: shade, by: 0.1), base.mix(with: shade, by: 0.2), base.mix(with: shade, by: 0.32)
+                ]
+            )
+            GrainTexture()
+            if shine { ShineSweep() }
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+/// Fine monochrome film grain, tiled. Gives flat color a printed, tactile surface.
+struct GrainTexture: View {
+    var opacity = 0.14
+
+    private static let tile: UIImage? = {
+        let size = CGRect(x: 0, y: 0, width: 160, height: 160)
+        let noise = CIFilter.randomGenerator()
+        let mono = CIFilter.colorControls()
+        mono.inputImage = noise.outputImage?.cropped(to: size)
+        mono.saturation = 0
+        guard let output = mono.outputImage,
+              let image = CIContext().createCGImage(output, from: size) else { return nil }
+        return UIImage(cgImage: image, scale: 3, orientation: .up)
+    }()
+
+    var body: some View {
+        if let tile = Self.tile {
+            Image(uiImage: tile)
+                .resizable(resizingMode: .tile)
+                .blendMode(.overlay)
+                .opacity(opacity)
+                .allowsHitTesting(false)
+        }
+    }
+}
+
+/// A soft diagonal highlight that sweeps across every few seconds. Skipped with Reduce Motion.
+struct ShineSweep: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var progress: CGFloat = 0
+
+    var body: some View {
+        GeometryReader { geo in
+            LinearGradient(
+                colors: [.clear, .white.opacity(0.22), .clear],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(width: geo.size.width * 0.35, height: geo.size.height * 2)
+            .rotationEffect(.degrees(18))
+            .position(x: -geo.size.width * 0.3 + progress * geo.size.width * 1.6, y: geo.size.height / 2)
+        }
+        .allowsHitTesting(false)
+        .task {
+            guard !reduceMotion else { return }
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(5))
+                guard !Task.isCancelled else { return }
+                withAnimation(.easeInOut(duration: 1.2)) { progress = 1 }
+                try? await Task.sleep(for: .seconds(1.3))
+                progress = 0
+            }
+        }
+    }
+}
+
+/// An oversized symbol cropped by the card's edge, as a decorative shape.
+/// Place it in a ZStack aligned to `.topTrailing` or `.bottomTrailing`.
+struct CornerGlyph: View {
+    let systemImage: String
+    var color: Color
+    var top = false
+    @ScaledMetric(relativeTo: .largeTitle) private var size: CGFloat = 120
+
+    var body: some View {
+        Image(systemName: systemImage)
+            .font(.illustration(size: size))
+            .foregroundStyle(color)
+            .rotationEffect(.degrees(-12))
+            .offset(x: size * 0.42, y: size * (top ? -0.34 : 0.34))
+            .accessibilityHidden(true)
+            .allowsHitTesting(false)
+    }
 }
 
 // MARK: - Symbols
@@ -152,7 +287,7 @@ struct FavoriteButton: View {
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.selection, trigger: isSaved)
-        .accessibilityLabel(isSaved ? "Remove from Saved" : "Save video")
+        .accessibilityLabel(isSaved ? "Remove from Saved" : "Save episode")
     }
 }
 
@@ -291,7 +426,7 @@ struct VideoPlayerSheet: View {
                                 .font(.title3)
                                 .frame(width: 44, height: 44)
                         }
-                        .accessibilityLabel("Share video")
+                        .accessibilityLabel("Share episode")
                         Spacer()
                         Link(destination: YouTube.watchURL(video.videoID)) {
                             Label("YouTube", systemImage: "arrow.up.forward")

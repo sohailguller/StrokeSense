@@ -29,7 +29,7 @@ struct HomeView: View {
 
                 if !videoVM.videos.isEmpty {
                     VStack(alignment: .leading, spacing: Spacing.m) {
-                        SectionHeader("Videos") {
+                        SectionHeader("Podcast Episodes") {
                             InterviewsView(viewModel: videoVM)
                         }
                         VideoCarousel(videos: videoVM.videos) { playingVideo = $0 }
@@ -217,17 +217,15 @@ private struct BeFastHeroCard: View {
             }
             .sensoryFeedback(.selection, trigger: taps)
 
-            NavigationLink(value: "befast") {
-                Text("Learn the Signs")
-                    .font(.headline)
-                    .foregroundStyle(.brandPrimary)
-                    .frame(maxWidth: .infinity, minHeight: 50)
-                    .background(.white, in: Capsule())
-            }
-            .buttonStyle(.plain)
+            NavigationLink("Learn the Signs", value: "befast")
+                .buttonStyle(ChunkyButtonStyle(
+                    fill: .white,
+                    edge: Color.white.mix(with: .brandPrimary, by: 0.45),
+                    label: .brandPrimary
+                ))
         }
         .padding(Spacing.l)
-        .background(.brandPrimary)
+        .background(FeatureBackground(base: .brandPrimary, shine: true))
         .clipShape(RoundedRectangle(cornerRadius: Radius.hero, style: .continuous))
         // Restarts whenever the sign changes, so a tap resets the timer.
         .task(id: index) {
@@ -296,7 +294,14 @@ private struct AskExpertCard: View {
             }
         }
         .padding(Spacing.l)
-        .cardStyle(radius: Radius.hero)
+        .background(alignment: .topTrailing) {
+            ZStack(alignment: .topTrailing) {
+                FeatureBackground(base: .card, shade: .brandSoft)
+                CornerGlyph(systemImage: "bubble.left.and.text.bubble.right.fill", color: .brandSoft, top: true)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: Radius.hero, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: Radius.hero, style: .continuous).strokeBorder(.hairline, lineWidth: 0.5))
     }
 }
 
@@ -387,32 +392,29 @@ private struct QuizCard: View {
     let onStart: () -> Void
 
     var body: some View {
-        Button(action: onStart) {
-            HStack(spacing: Spacing.m) {
-                Image(systemName: "checkmark.seal.fill")
-                    .font(.largeTitle)
-                    .symbolRenderingMode(.monochrome)
-                    .foregroundStyle(.tint)
-                    .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: Spacing.xxs) {
-                    Text("Test what you know")
-                        .font(.cardHeadline)
-                        .foregroundStyle(.ink)
-                    Text("10 questions · about 3 minutes")
-                        .font(.subheadline)
-                        .foregroundStyle(.inkMuted)
-                }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.footnote.weight(.semibold))
+        VStack(alignment: .leading, spacing: Spacing.m) {
+            VStack(alignment: .leading, spacing: Spacing.xxs) {
+                Text("Test what you know")
+                    .font(.cardTitle)
+                    .foregroundStyle(.ink)
+                Text("10 questions · about 3 minutes")
+                    .font(.subheadline)
                     .foregroundStyle(.inkMuted)
             }
-            .padding(Spacing.l)
-            .cardStyle()
-            .contentShape(Rectangle())
+            .padding(.trailing, Spacing.xxl)
+
+            Button("Start Quiz", action: onStart)
+                .buttonStyle(.primary)
+                .accessibilityHint("Starts a 10 question quiz")
         }
-        .buttonStyle(.plain)
-        .accessibilityHint("Starts a 10 question quiz")
+        .padding(Spacing.l)
+        .background(alignment: .bottomTrailing) {
+            ZStack(alignment: .topTrailing) {
+                FeatureBackground(base: .brandSoft, highlight: .card, shade: .brandPrimary)
+                CornerGlyph(systemImage: "checkmark.seal.fill", color: .brandPrimary.opacity(0.14), top: true)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: Radius.hero, style: .continuous))
     }
 }
 

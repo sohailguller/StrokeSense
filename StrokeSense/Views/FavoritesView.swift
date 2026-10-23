@@ -35,9 +35,9 @@ struct FavoritesView: View {
         .overlay {
             if favoritesManager.favorites.isEmpty {
                 ContentUnavailableView(
-                    "No saved videos",
+                    "No saved episodes",
                     systemImage: "heart",
-                    description: Text("Tap the heart on any video to keep it here.")
+                    description: Text("Tap the heart on any episode to keep it here.")
                 )
             }
         }
@@ -63,7 +63,7 @@ private struct SavedVideoRow: View {
         .padding(.vertical, Spacing.xxs)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
-        .accessibilityHint("Plays the video")
+        .accessibilityHint("Plays the episode")
     }
 }
 

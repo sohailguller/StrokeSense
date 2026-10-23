@@ -30,7 +30,7 @@ struct BefastView: View {
             navigationTitle: "B.E. F.A.S.T.",
             hero: TopicHero(
                 title: "B.E. F.A.S.T.",
-                summary: "Stroke symptoms come on suddenly. If you notice any one of these signs, call an ambulance immediately. Fast treatment can save brain function.",
+                summary: "Stroke symptoms come on suddenly. If you notice any one of these signs, call 911 or your local emergency number immediately. Fast treatment can save brain function.",
                 systemImage: "bolt.heart.fill",
                 tint: .emergency
             ),
