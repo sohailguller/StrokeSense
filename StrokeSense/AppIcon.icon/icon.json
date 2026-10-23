@@ -1,48 +1,70 @@
 {
-  "fill" : {
-    "solid" : "srgb:0.00000,0.00000,0.00000,1.00000"
-  },
+  "fill-specializations" : [
+    {
+      "value" : {
+        "linear-gradient" : [
+          "srgb:0.90980,0.14118,0.23529,1.00000",
+          "srgb:0.70196,0.04706,0.15294,1.00000"
+        ],
+        "orientation" : {
+          "start" : { "x" : 0.5, "y" : 0 },
+          "stop" : { "x" : 0.5, "y" : 1 }
+        }
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "linear-gradient" : [
+          "srgb:0.18039,0.17255,0.17647,1.00000",
+          "srgb:0.07059,0.06667,0.07059,1.00000"
+        ],
+        "orientation" : {
+          "start" : { "x" : 0.5, "y" : 0 },
+          "stop" : { "x" : 0.5, "y" : 1 }
+        }
+      }
+    }
+  ],
   "groups" : [
     {
       "layers" : [
         {
-          "glass" : false,
-          "image-name" : "Heads.png",
-          "name" : "Heads"
+          "fill-specializations" : [
+            { "value" : { "solid" : "srgb:1.00000,1.00000,1.00000,1.00000" } },
+            { "appearance" : "dark", "value" : { "solid" : "srgb:1.00000,0.27059,0.22745,1.00000" } }
+          ],
+          "glass" : true,
+          "image-name" : "Brain.png",
+          "name" : "Brain"
         }
       ],
-      "name" : "Heads",
-      "shadow" : {
-        "kind" : "none",
-        "opacity" : 0
-      },
-      "specular" : false,
-      "translucency" : {
-        "enabled" : false,
-        "value" : 0
-      }
+      "name" : "Brain",
+      "shadow" : { "kind" : "neutral", "opacity" : 0.5 },
+      "specular" : true,
+      "translucency" : { "enabled" : true, "value" : 0.3 }
     },
     {
       "layers" : [
         {
-          "glass" : false,
-          "image-name" : "Heart.png",
-          "name" : "Heart"
+          "fill-specializations" : [
+            { "value" : { "solid" : "srgb:1.00000,1.00000,1.00000,1.00000" } },
+            { "appearance" : "dark", "value" : { "solid" : "srgb:1.00000,0.27059,0.22745,1.00000" } }
+          ],
+          "glass" : true,
+          "image-name" : "Cerebellum.png",
+          "name" : "Cerebellum",
+          "opacity" : 0.82
         }
       ],
-      "name" : "Heart",
-      "shadow" : {
-        "kind" : "none",
-        "opacity" : 0
-      },
-      "specular" : false,
-      "translucency" : {
-        "enabled" : false,
-        "value" : 0
-      }
+      "name" : "Cerebellum",
+      "shadow" : { "kind" : "neutral", "opacity" : 0.5 },
+      "specular" : true,
+      "translucency" : { "enabled" : true, "value" : 0.3 }
     }
   ],
   "supported-platforms" : {
+    "circles" : [ "watchOS" ],
     "squares" : "shared"
   }
 }
