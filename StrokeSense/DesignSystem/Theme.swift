@@ -7,7 +7,8 @@
 //
 //  - AccentColor   Tint for text, links and icons on surfaces (lighter in dark mode).
 //  - BrandPrimary  Fills that carry white text: buttons, user chat bubbles, hero cards.
-//  - BrandSoft     Quiet backgrounds behind brand-tinted icons.
+//  - BrandSoft     Warm neutral tint for quiet surfaces (not pink; no pastels).
+//  - Practice      Deep burgundy for the quiz: same red family as the brand, no new hues.
 //  - Emergency     Reserved for emergency guidance and BE FAST. Never decorative.
 //  - Success       Correct quiz answers.
 //  - Ink / InkMuted  Primary and secondary text.

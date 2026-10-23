@@ -396,22 +396,26 @@ private struct QuizCard: View {
             VStack(alignment: .leading, spacing: Spacing.xxs) {
                 Text("Test what you know")
                     .font(.cardTitle)
-                    .foregroundStyle(.ink)
+                    .foregroundStyle(.white)
                 Text("10 questions · about 3 minutes")
-                    .font(.subheadline)
-                    .foregroundStyle(.inkMuted)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.white.opacity(0.85))
             }
             .padding(.trailing, Spacing.xxl)
 
             Button("Start Quiz", action: onStart)
-                .buttonStyle(.primary)
+                .buttonStyle(ChunkyButtonStyle(
+                    fill: .white,
+                    edge: Color.white.mix(with: .practice, by: 0.45),
+                    label: .practice
+                ))
                 .accessibilityHint("Starts a 10 question quiz")
         }
         .padding(Spacing.l)
-        .background(alignment: .bottomTrailing) {
+        .background {
             ZStack(alignment: .topTrailing) {
-                FeatureBackground(base: .brandSoft, highlight: .card, shade: .brandPrimary)
-                CornerGlyph(systemImage: "checkmark.seal.fill", color: .brandPrimary.opacity(0.14), top: true)
+                FeatureBackground(base: .practice)
+                CornerGlyph(systemImage: "checkmark.seal.fill", color: .white.opacity(0.12), top: true)
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: Radius.hero, style: .continuous))
