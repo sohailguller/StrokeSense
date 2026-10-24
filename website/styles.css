@@ -26,7 +26,10 @@ body {
   font: 17px/1.45 ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-a { color: var(--accent); }
+a { color: var(--accent); -webkit-tap-highlight-color: transparent; }
+button { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.befast :focus-visible { outline-color: #fff; }
 img, svg { display: block; }
 
 .wrap { max-width: 1000px; margin: 0 auto; padding: 0 var(--space-l); }
@@ -86,12 +89,16 @@ section { margin-bottom: 56px; }
 
 /* B.E. F.A.S.T. card, as on the app's Home screen */
 .befast { padding: var(--space-l); display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-l); }
-.sign { display: flex; align-items: center; gap: var(--space-m); min-height: 92px; }
-.sign svg { width: 76px; height: 64px; flex: none; }
-.sign h3 { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
-.sign p { margin: 0; font-size: 15px; font-weight: 500; opacity: .9; }
-.sign-panel { animation: push .45s cubic-bezier(.2,.8,.2,1); }
-@keyframes push { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+.sign { display: grid; }
+.sign-panel {
+  grid-area: 1 / 1; display: flex; align-items: center; gap: var(--space-m);
+  visibility: hidden; opacity: 0; transform: translateX(16px);
+  transition: opacity .35s, transform .35s cubic-bezier(.2,.8,.2,1), visibility 0s .35s;
+}
+.sign-panel.active { visibility: visible; opacity: 1; transform: none; transition: opacity .35s, transform .35s cubic-bezier(.2,.8,.2,1); }
+.sign-panel svg { width: 56px; height: 56px; flex: none; color: #fff; }
+.sign-panel h3 { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
+.sign-panel p { margin: 0; font-size: 15px; font-weight: 500; opacity: .9; }
 .letters { display: flex; }
 .letters button {
   flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
@@ -114,7 +121,7 @@ section { margin-bottom: 56px; }
 .expert-head { display: flex; align-items: flex-start; gap: var(--space-s); }
 .expert-head svg { width: 30px; height: 30px; margin-top: 2px; flex: none; }
 .expert-head p { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
-.expert > .button { align-self: flex-start; }
+.expert > .button { align-self: flex-start; max-width: 100%; overflow-wrap: anywhere; padding: 12px 24px; }
 .ask-field {
   display: flex; align-items: center; gap: var(--space-xs);
   min-height: 48px; padding: 0 var(--space-xs) 0 var(--space-m);
@@ -175,5 +182,6 @@ footer a { color: var(--muted); }
   .prose { padding: var(--space-l); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sign-panel, .ask-field .caret { animation: none; }
+  .sign-panel, .sign-panel.active { transition: none; }
+  .ask-field .caret { animation: none; }
 }

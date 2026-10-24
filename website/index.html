@@ -19,7 +19,7 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-fall" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="35" cy="9" r="4.5" fill="currentColor" stroke="none"/><path d="M30 17 19 30M11 19l8 3 13 3M19 30l-9 9M19 30l10 3 2 9"/></symbol>
   <symbol id="i-eye" viewBox="0 0 48 48"><path fill="currentColor" d="M24 11C14 11 6.5 18 3 24c3.5 6 11 13 21 13s17.5-7 21-13c-3.5-6-11-13-21-13Zm0 21a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z"/><circle cx="24" cy="24" r="3.5" fill="currentColor"/></symbol>
-  <symbol id="i-face" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><circle cx="24" cy="24" r="19"/><circle cx="17" cy="19" r="2.5" fill="currentColor" stroke="none"/><circle cx="31" cy="20" r="2.5" fill="currentColor" stroke="none"/><path d="M15 30c3 2 7 3 10 3 3 0 5-1 8 1"/></symbol>
+  <symbol id="i-face" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="currentColor"/><circle cx="17" cy="19" r="3" fill="#D1102E"/><circle cx="31" cy="20" r="3" fill="#D1102E"/><path d="M15 31c3 2 7 3 10 3 3 0 5-1 8 1" fill="none" stroke="#D1102E" stroke-width="4" stroke-linecap="round"/></symbol>
   <symbol id="i-arms" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="8" r="4.5" fill="currentColor" stroke="none"/><path d="M6 15l18 4 18-4M24 19v11M24 30l-6 12M24 30l6 12"/></symbol>
   <symbol id="i-speech" viewBox="0 0 48 48"><path fill="currentColor" d="M24 7C13 7 4 14 4 23c0 5 3 9.5 7.5 12.5L10 43l9-5c1.6.3 3.3.5 5 .5 11 0 20-7 20-15.5S35 7 24 7Z"/><path d="M15 20h18M15 27h11" stroke="#D1102E" stroke-width="4" stroke-linecap="round"/></symbol>
   <symbol id="i-clock" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="currentColor"/><path d="M24 12v13l8 5" fill="none" stroke="#D1102E" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -56,7 +56,6 @@
     </div>
 
     <div class="feature-card expert">
-      <svg class="corner-glyph" viewBox="0 0 28 28" style="color:#F1EDE9"><use href="#i-bubble"/></svg>
       <div class="expert-head">
         <svg style="color:var(--accent)"><use href="#i-pulse"/></svg>
         <div><h2 class="card-title">Stroke Expert</h2><p>Plain-language answers about stroke</p></div>
@@ -105,8 +104,15 @@
   const letters = document.getElementById("letters");
   let index = 0, timer;
 
-  signs.forEach(([letter, name, prompt], i) => {
+  // Every sign is laid out at once in the same spot, so the card never changes height.
+  signs.forEach(([letter, name, prompt, icon], i) => {
+    const panel = document.createElement("div");
+    panel.className = "sign-panel";
+    panel.innerHTML = `<svg viewBox="0 0 48 48" aria-hidden="true"><use href="#${icon}"/></svg><div><h3>${name}</h3><p>${prompt}</p></div>`;
+    sign.append(panel);
+
     const b = document.createElement("button");
+    b.type = "button";
     b.textContent = letter;
     b.setAttribute("aria-label", `${name}: ${prompt}`);
     b.onclick = () => show(i);
@@ -115,9 +121,7 @@
 
   function show(i) {
     index = i;
-    const [, name, prompt, icon] = signs[i];
-    sign.innerHTML = `<svg style="color:#fff" aria-hidden="true"><use href="#${icon}"/></svg><div><h3>${name}</h3><p>${prompt}</p></div>`;
-    sign.classList.remove("sign-panel"); void sign.offsetWidth; sign.classList.add("sign-panel");
+    [...sign.children].forEach((p, j) => p.classList.toggle("active", j === i));
     [...letters.children].forEach((b, j) => b.setAttribute("aria-pressed", j === i));
     clearTimeout(timer);
     if (!reduce) timer = setTimeout(() => show((index + 1) % signs.length), 3000);
