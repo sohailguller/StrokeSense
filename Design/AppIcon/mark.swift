@@ -3,35 +3,44 @@
 //
 //   swiftc -O mark.swift -o /tmp/mark && /tmp/mark ../../StrokeSense/AppIcon.icon/Assets
 //
-// The idea: StrokeSense teaches one skill, noticing when one side stops matching the
-// other (a face that droops, an arm that drifts). The mark is a brain seen from above:
-// two hemispheres, one sitting a little lower and fading. The gap between them is the
-// moment you notice.
+// The idea: a brain seen from above, its two hemispheres locked together like puzzle
+// pieces. The brain says stroke at a glance; the puzzle says learning, putting the signs
+// together. The right hemisphere is faded in Icon Composer: one side losing function,
+// the sign StrokeSense teaches people to notice.
 //
 // Construction (1024 x 1024 canvas, y down):
-//   Outline   superellipse |x/a|^n + |y/b|^n = 1, n = 2.1, a = 244, b = 282,
+//   Outline   superellipse |x/a|^n + |y/b|^n = 1, n = 2.15, a = 284, b = 328,
 //             narrower at the front: a(y) = a * (1 + k * y / b), k = 0.08.
-//   Unit      u = 36. The fissure and every fold are exactly one unit wide.
-//   Folds     two per hemisphere, at 37% and 65% of the height. Each leaves the edge at a
-//             right angle and fans away from the other, like the central and
-//             parieto-occipital sulci.
-//   Drop      the right hemisphere sits 32 lower (about 5% of the height). The pair is
-//             lifted by half of that so it stays optically centered.
-//   Softening a morphological opening with radius 5 rounds every convex corner.
+//   Unit      u = 38. The seam and every fold are exactly one unit wide.
+//   Tabs      two puzzle tabs on the midline at ±30% of the half-height, one pointing
+//             each way, so the halves truly interlock. Head radius 62, neck 62, reach 76.
+//   Folds     two per hemisphere, at 30% and 72% of the height. Each leaves the edge at a
+//             right angle and bends toward the middle.
+//   Softening a morphological opening with radius 6 rounds every convex corner.
 
 import CoreGraphics
 import Foundation
 
-let canvas: CGFloat = 1024
 let cx: CGFloat = 512
 let cy: CGFloat = 512
-let a: CGFloat = 244
-let b: CGFloat = 282
-let n: CGFloat = 2.1
+let a: CGFloat = 284
+let b: CGFloat = 328
+let n: CGFloat = 2.15
 let k: CGFloat = 0.08
-let u: CGFloat = 36
-let drop: CGFloat = 32
-let soften: CGFloat = 5
+let u: CGFloat = 38
+let tabRadius: CGFloat = 62
+let tabNeck: CGFloat = 62
+let tabReach: CGFloat = 76
+let soften: CGFloat = 6
+
+func stroke(_ path: CGPath, _ width: CGFloat) -> CGPath {
+    path.copy(strokingWithWidth: width, lineCap: .round, lineJoin: .round, miterLimit: 10)
+}
+
+func softened(_ shape: CGPath) -> CGPath {
+    let eroded = shape.subtracting(stroke(shape, soften * 2))
+    return eroded.union(stroke(eroded, soften * 2))
+}
 
 func outline() -> CGPath {
     let p = CGMutablePath()
@@ -55,7 +64,16 @@ func leftEdge(_ y: CGFloat) -> CGPoint {
     return CGPoint(x: cx - x, y: y)
 }
 
-/// A fold that leaves the lateral edge at a right angle, then bends toward its end.
+/// A puzzle tab on the midline at height `y`, pointing right (+1) or left (-1).
+func tab(at y: CGFloat, pointing direction: CGFloat) -> CGPath {
+    let head = CGPath(ellipseIn: CGRect(x: cx + direction * tabReach - tabRadius, y: y - tabRadius,
+                                        width: 2 * tabRadius, height: 2 * tabRadius), transform: nil)
+    let neck = CGPath(rect: CGRect(x: direction > 0 ? cx - 2 : cx + 2 - tabReach, y: y - tabNeck / 2,
+                                   width: tabReach, height: tabNeck), transform: nil)
+    return head.union(neck)
+}
+
+/// A fold in the left hemisphere that leaves the edge at a right angle, then bends toward its end.
 /// - Parameters:
 ///   - at: where it meets the edge, as a fraction of the height.
 ///   - rise: how far its end rises, as a fraction of the height (negative falls).
@@ -76,20 +94,23 @@ func fold(at: CGFloat, rise: CGFloat, reach: CGFloat) -> CGPath {
     p.addCurve(to: end,
                control1: CGPoint(x: edge.x + inward.x * distance * 0.45, y: edge.y + inward.y * distance * 0.45),
                control2: CGPoint(x: end.x - distance * 0.3, y: end.y))
-    return p.copy(strokingWithWidth: u, lineCap: .round, lineJoin: .round, miterLimit: 10)
+    return stroke(p, u)
 }
 
-func softened(_ shape: CGPath) -> CGPath {
-    let eroded = shape.subtracting(shape.copy(strokingWithWidth: soften * 2, lineCap: .round, lineJoin: .round, miterLimit: 10))
-    return eroded.union(eroded.copy(strokingWithWidth: soften * 2, lineCap: .round, lineJoin: .round, miterLimit: 10))
-}
+// The left hemisphere's territory: everything left of the midline, plus the tab it sends
+// right, minus the tab the right hemisphere sends left.
+let territory = CGPath(rect: CGRect(x: 0, y: 0, width: cx, height: 1024), transform: nil)
+    .union(tab(at: cy - b * 0.3, pointing: 1))
+    .subtracting(tab(at: cy + b * 0.3, pointing: -1))
+let seam = stroke(territory, u)
+let folds = [fold(at: 0.30, rise: 0.06, reach: 0.42), fold(at: 0.72, rise: -0.06, reach: 0.42)]
+var mirror = CGAffineTransform(a: -1, b: 0, c: 0, d: 1, tx: 2 * cx, ty: 0)
 
-func leftHemisphere() -> CGPath {
-    let half = CGPath(rect: CGRect(x: 0, y: 0, width: cx - u / 2, height: canvas), transform: nil)
-    var shape = outline().intersection(half)
-    shape = shape.subtracting(fold(at: 0.37, rise: 0.08, reach: 0.5))
-    shape = shape.subtracting(fold(at: 0.65, rise: -0.08, reach: 0.5))
-    return softened(shape)
+var left = outline().intersection(territory).subtracting(seam)
+var right = outline().subtracting(territory).subtracting(seam)
+for f in folds {
+    left = left.subtracting(f)
+    right = right.subtracting(f.copy(using: &mirror)!)
 }
 
 func svg(_ path: CGPath) -> String {
@@ -114,11 +135,6 @@ func svg(_ path: CGPath) -> String {
     """
 }
 
-var lift = CGAffineTransform(translationX: 0, y: -drop / 2)
-let left = leftHemisphere().copy(using: &lift)!
-var mirror = CGAffineTransform(a: -1, b: 0, c: 0, d: 1, tx: canvas, ty: drop / 2)
-let right = leftHemisphere().copy(using: &mirror)!
-
 let out = CommandLine.arguments[1]
-try svg(left).write(toFile: out + "/1_Left.svg", atomically: true, encoding: .utf8)
-try svg(right).write(toFile: out + "/0_Right.svg", atomically: true, encoding: .utf8)
+try svg(softened(left)).write(toFile: out + "/1_Left.svg", atomically: true, encoding: .utf8)
+try svg(softened(right)).write(toFile: out + "/0_Right.svg", atomically: true, encoding: .utf8)
