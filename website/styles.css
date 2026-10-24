@@ -96,7 +96,7 @@ section { margin-bottom: 56px; }
   transition: opacity .35s, transform .35s cubic-bezier(.2,.8,.2,1), visibility 0s .35s;
 }
 .sign-panel.active { visibility: visible; opacity: 1; transform: none; transition: opacity .35s, transform .35s cubic-bezier(.2,.8,.2,1); }
-.sign-panel svg { width: 56px; height: 56px; flex: none; color: #fff; }
+.sign-panel svg { width: 60px; height: 60px; flex: none; color: #fff; }
 .sign-panel h3 { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
 .sign-panel p { margin: 0; font-size: 15px; font-weight: 500; opacity: .9; }
 .letters { display: flex; }
@@ -131,13 +131,13 @@ section { margin-bottom: 56px; }
 .ask-field .typed { flex: 1; white-space: nowrap; overflow: hidden; }
 .ask-field .caret { display: inline-block; width: 2px; height: 1.1em; background: var(--accent); vertical-align: -3px; margin-left: 1px; animation: blink 1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
-.send { width: 32px; height: 32px; flex: none; }
+.send { width: 38px; height: 38px; flex: none; margin-right: -3px; }
 .suggestions a {
   display: flex; justify-content: space-between; align-items: center; gap: var(--space-m);
   padding: var(--space-s) 0; color: var(--ink); text-decoration: none;
 }
 .suggestions a + a { border-top: 0.5px solid var(--hairline); }
-.suggestions svg { width: 14px; height: 14px; flex: none; }
+.suggestions svg { width: 16px; height: 16px; flex: none; }
 
 /* Learn-style grouped rows */
 .list { background: var(--card); border: 0.5px solid var(--hairline); border-radius: var(--radius-card); padding: 0 var(--space-l); }
