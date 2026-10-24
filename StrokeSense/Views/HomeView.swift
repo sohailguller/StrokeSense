@@ -244,6 +244,7 @@ private struct AskExpertCard: View {
     @EnvironmentObject private var session: ChatSession
     /// The example being typed; tapping the field carries it over to Ask.
     @State private var typedQuestion: String?
+    @ScaledMetric(relativeTo: .title2) private var sendSize: CGFloat = 32
 
     private static let examples = [
         "Can young people have a stroke?",
@@ -279,12 +280,15 @@ private struct AskExpertCard: View {
                     TypingPrompt(prompts: Self.examples, current: $typedQuestion)
                     Spacer(minLength: Spacing.xs)
                     Image(systemName: "arrow.up.circle.fill")
-                        .font(.title2)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: sendSize, height: sendSize)
                         .foregroundStyle(.tint)
                 }
                 .padding(.leading, Spacing.m)
                 .padding(.trailing, Spacing.xs)
-                .frame(minHeight: 48)
+                // The same space above, below and after the button, so it sits concentric in the capsule.
+                .frame(minHeight: sendSize + 2 * Spacing.xs)
                 .background(.surface, in: Capsule())
                 .overlay(Capsule().strokeBorder(.hairline, lineWidth: 0.5))
                 .contentShape(Capsule())

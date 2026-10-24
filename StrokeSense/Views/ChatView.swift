@@ -296,6 +296,9 @@ private struct ChatInputBar: View {
     var isFocused: FocusState<Bool>.Binding
     let isLoading: Bool
     let onSend: () -> Void
+    @ScaledMetric(relativeTo: .title) private var sendSize: CGFloat = 32
+    /// Space around the send button, the same on every side so it sits concentric in the bar.
+    private let sendInset: CGFloat = 7
 
     private var canSend: Bool {
         !isLoading && !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -310,15 +313,19 @@ private struct ChatInputBar: View {
                 .focused(isFocused)
                 .padding(.leading, Spacing.m)
                 .padding(.vertical, 12)
+                // One line is exactly as tall as the button, so the button stays centered on it.
+                .frame(minHeight: sendSize + 2 * sendInset)
 
             Button(action: onSend) {
                 Image(systemName: "arrow.up.circle.fill")
-                    .font(.title)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: sendSize, height: sendSize)
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(.white, canSend ? AnyShapeStyle(.brandPrimary) : AnyShapeStyle(.inkMuted.opacity(0.4)))
             }
             .disabled(!canSend)
-            .padding(5)
+            .padding(sendInset)
             .accessibilityLabel("Send")
         }
         .floatingGlass(in: RoundedRectangle(cornerRadius: 24, style: .continuous))
