@@ -5,36 +5,52 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>StrokeSense Support</title>
 <meta name="description" content="Get help with StrokeSense or report an issue.">
+<meta name="theme-color" content="#FAF8F6">
 <link rel="icon" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-bubble" viewBox="0 0 28 28" fill="currentColor"><path d="M14 3C7.4 3 2 7.3 2 12.8c0 3 1.7 5.8 4.4 7.6L5.5 25l5.6-3c1 .2 1.9.3 2.9.3 6.6 0 12-4.4 12-9.7S20.6 3 14 3Z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 30 30"><rect x="2" y="6" width="26" height="19" rx="4" fill="currentColor"/><path d="M5 10l10 7 10-7" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-cross" viewBox="0 0 28 28" fill="currentColor"><path d="M10.5 3h7v7.5H25v7h-7.5V25h-7v-7.5H3v-7h7.5Z"/></symbol>
+  <symbol id="i-person" viewBox="0 0 28 28" fill="currentColor"><circle cx="14" cy="9" r="5.5"/><path d="M3.5 25c0-5.5 4.7-9 10.5-9s10.5 3.5 10.5 9Z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 28 28"><path d="M8.5 12V9a5.5 5.5 0 0 1 11 0v3" fill="none" stroke="currentColor" stroke-width="3"/><rect x="4.5" y="12" width="19" height="13" rx="3.5" fill="currentColor"/></symbol>
+</svg>
+
 <header><div class="wrap">
   <a class="brand" href="/"><img src="/favicon.png" alt="">StrokeSense</a>
   <nav><a href="/">Home</a><a href="/support" aria-current="page">Support</a><a href="/privacy">Privacy</a></nav>
 </div></header>
 
 <main class="wrap page">
-  <h1>Support</h1>
+  <h1 class="hero-title">Support</h1>
   <p class="lead">Have a question or found a problem? We'd love to hear from you.</p>
 
-  <div class="card">
-    <h3>Email us</h3>
-    <p style="margin-bottom:20px">We read every message and reply as soon as we can.</p>
-    <a class="button" href="mailto:mguller5000@yahoo.com?subject=StrokeSense%20Support">mguller5000@yahoo.com</a>
-  </div>
+  <section>
+    <div class="feature-card expert">
+      <svg class="corner-glyph" viewBox="0 0 28 28" style="color:#F1EDE9"><use href="#i-bubble"/></svg>
+      <div class="expert-head">
+        <svg style="color:var(--accent)"><use href="#i-mail"/></svg>
+        <div><h2 class="card-title">Email us</h2><p>We read every message and reply as soon as we can.</p></div>
+      </div>
+      <a class="button" href="mailto:mguller5000@yahoo.com?subject=StrokeSense%20Support">mguller5000@yahoo.com</a>
+    </div>
+  </section>
 
-  <h2>Common questions</h2>
-  <div class="faq">
-    <div class="card"><h3>Is StrokeSense medical advice?</h3><p>No. StrokeSense provides general education. If you think someone is having a stroke, call 911 or your local emergency number right away.</p></div>
-    <div class="card"><h3>Does StrokeSense need an account?</h3><p>No. There are no accounts, ads, or tracking. Your profile and saved episodes stay on your iPhone.</p></div>
-    <div class="card"><h3>How do I stop sharing questions with the Stroke Expert?</h3><p>Open Profile and turn off Share Questions with OpenAI. The suggested questions still work without sharing.</p></div>
-  </div>
+  <section>
+    <h2 class="section-title">Common questions</h2>
+    <div class="list">
+      <div class="row top"><svg><use href="#i-cross"/></svg><div><h3>Is StrokeSense medical advice?</h3><p>No. StrokeSense provides general education. If you think someone is having a stroke, call 911 or your local emergency number right away.</p></div></div>
+      <div class="row top"><svg><use href="#i-person"/></svg><div><h3>Do I need an account?</h3><p>No. There are no accounts, ads or tracking. Your profile and saved episodes stay on your iPhone.</p></div></div>
+      <div class="row top"><svg><use href="#i-lock"/></svg><div><h3>How do I stop sharing questions with the Stroke Expert?</h3><p>Open Profile and turn off Share Questions with OpenAI. The suggested questions still work without sharing.</p></div></div>
+    </div>
+  </section>
 </main>
 
 <footer><div class="wrap">
-  <span>StrokeSense provides general education, not medical advice.</span>
+  <span>If you notice signs of a stroke, call 911 or your local emergency number right away.</span>
   <span><a href="/support">Support</a> · <a href="/privacy">Privacy Policy</a></span>
 </div></footer>
 </body>

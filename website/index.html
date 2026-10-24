@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>StrokeSense: Know the Signs of a Stroke</title>
 <meta name="description" content="StrokeSense helps families and bystanders learn to spot a stroke and act fast.">
+<meta name="theme-color" content="#FAF8F6">
 <meta name="apple-itunes-app" content="app-id=6743031338">
 <meta property="og:title" content="StrokeSense">
 <meta property="og:description" content="Learn to spot a stroke and act fast.">
@@ -14,6 +15,24 @@
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+<!-- Icons drawn to match the app's SF Symbols: solid, rounded, semibold. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-fall" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="35" cy="9" r="4.5" fill="currentColor" stroke="none"/><path d="M30 17 19 30M11 19l8 3 13 3M19 30l-9 9M19 30l10 3 2 9"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 48 48"><path fill="currentColor" d="M24 11C14 11 6.5 18 3 24c3.5 6 11 13 21 13s17.5-7 21-13c-3.5-6-11-13-21-13Zm0 21a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z"/><circle cx="24" cy="24" r="3.5" fill="currentColor"/></symbol>
+  <symbol id="i-face" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><circle cx="24" cy="24" r="19"/><circle cx="17" cy="19" r="2.5" fill="currentColor" stroke="none"/><circle cx="31" cy="20" r="2.5" fill="currentColor" stroke="none"/><path d="M15 30c3 2 7 3 10 3 3 0 5-1 8 1"/></symbol>
+  <symbol id="i-arms" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="8" r="4.5" fill="currentColor" stroke="none"/><path d="M6 15l18 4 18-4M24 19v11M24 30l-6 12M24 30l6 12"/></symbol>
+  <symbol id="i-speech" viewBox="0 0 48 48"><path fill="currentColor" d="M24 7C13 7 4 14 4 23c0 5 3 9.5 7.5 12.5L10 43l9-5c1.6.3 3.3.5 5 .5 11 0 20-7 20-15.5S35 7 24 7Z"/><path d="M15 20h18M15 27h11" stroke="#D1102E" stroke-width="4" stroke-linecap="round"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="currentColor"/><path d="M24 12v13l8 5" fill="none" stroke="#D1102E" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16h6l3-7 5 14 4-10 2 3h6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 11 3M5 3h6v6"/></symbol>
+  <symbol id="i-book" viewBox="0 0 28 28" fill="currentColor"><path d="M4 5.5C4 4.1 5.1 3 6.5 3H13v20H6.5A2.5 2.5 0 0 0 4 25.5ZM24 5.5C24 4.1 22.9 3 21.5 3H15v20h6.5a2.5 2.5 0 0 1 2.5 2.5Z"/></symbol>
+  <symbol id="i-bubble" viewBox="0 0 28 28" fill="currentColor"><path d="M14 3C7.4 3 2 7.3 2 12.8c0 3 1.7 5.8 4.4 7.6L5.5 25l5.6-3c1 .2 1.9.3 2.9.3 6.6 0 12-4.4 12-9.7S20.6 3 14 3Z"/></symbol>
+  <symbol id="i-phones" viewBox="0 0 28 28" fill="currentColor"><path d="M14 3C8 3 3.5 7.6 3.5 13.5V20h2.5v-6.5C6 9 9.6 5.5 14 5.5S22 9 22 13.5V20h2.5v-6.5C24.5 7.6 20 3 14 3Z"/><rect x="3" y="15" width="7" height="10" rx="3"/><rect x="18" y="15" width="7" height="10" rx="3"/></symbol>
+  <symbol id="i-seal" viewBox="0 0 28 28"><path fill="currentColor" d="M14 2l3 2.6 4-.3.9 3.9 3.4 2.1-1.5 3.7 1.5 3.7-3.4 2.1-.9 3.9-4-.3L14 26l-3-2.6-4 .3-.9-3.9-3.4-2.1L4.2 14 2.7 10.3l3.4-2.1L7 4.3l4 .3Z"/><path d="M9.5 14.2l3 3 6-6.2" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-news" viewBox="0 0 28 28" fill="currentColor"><path d="M5 4h15a2 2 0 0 1 2 2v16a2 2 0 0 0 2 2H6a3 3 0 0 1-3-3V6a2 2 0 0 1 2-2Z"/><path d="M22 10h3v12a2 2 0 0 1-4 0Z"/><path d="M7 9h10M7 13h10M7 17h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 28 28" fill="currentColor"><path d="M14 25S2.5 18 2.5 10A6 6 0 0 1 14 7a6 6 0 0 1 11.5 3C25.5 18 14 25 14 25Z"/></symbol>
+</svg>
+
 <header><div class="wrap">
   <a class="brand" href="/"><img src="/favicon.png" alt="">StrokeSense</a>
   <nav><a href="/" aria-current="page">Home</a><a href="/support">Support</a><a href="/privacy">Privacy</a></nav>
@@ -22,44 +41,103 @@
 <main class="wrap">
   <div class="hero">
     <div>
-      <h1>Know the signs of a stroke.</h1>
+      <h1 class="hero-title">Know the signs of a stroke.</h1>
       <p class="lead">StrokeSense helps families and bystanders spot a stroke, act fast, and understand what comes next.</p>
       <a class="button" href="https://apps.apple.com/app/strokesense/id6743031338">Download on the App Store</a>
     </div>
     <img class="icon" src="/icon.png" alt="The StrokeSense app icon: a brain whose two halves fit together like puzzle pieces">
   </div>
 
-  <section class="befast">
-    <h2>Think B.E. F.A.S.T.</h2>
-    <p>Stroke is a leading cause of death and disability worldwide, but fast treatment saves lives and brain function.</p>
-    <div class="letters">
-      <div><b>B</b><span>Balance</span></div>
-      <div><b>E</b><span>Eyes</span></div>
-      <div><b>F</b><span>Face</span></div>
-      <div><b>A</b><span>Arms</span></div>
-      <div><b>S</b><span>Speech</span></div>
-      <div><b>T</b><span>Time</span></div>
+  <section class="pair">
+    <div class="feature-red befast">
+      <div class="sign" id="sign" aria-live="polite"></div>
+      <div class="letters" id="letters" role="group" aria-label="B.E. F.A.S.T. signs"></div>
+      <a class="button white" href="https://apps.apple.com/app/strokesense/id6743031338">Learn the Signs</a>
     </div>
-    <p><strong>If you notice any of these signs, call 911 or your local emergency number right away.</strong></p>
+
+    <div class="feature-card expert">
+      <svg class="corner-glyph" viewBox="0 0 28 28" style="color:#F1EDE9"><use href="#i-bubble"/></svg>
+      <div class="expert-head">
+        <svg style="color:var(--accent)"><use href="#i-pulse"/></svg>
+        <div><h2 class="card-title">Stroke Expert</h2><p>Plain-language answers about stroke</p></div>
+      </div>
+      <a class="ask-field" href="https://apps.apple.com/app/strokesense/id6743031338" aria-label="Ask the Stroke Expert in the app">
+        <span class="typed"><span id="typed"></span><span class="caret"></span></span>
+        <svg class="send" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#D1102E"/><path d="M16 23V10M10.5 15.5 16 10l5.5 5.5" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <div class="suggestions">
+        <a href="https://apps.apple.com/app/strokesense/id6743031338">What is a stroke?<svg style="color:var(--accent)"><use href="#i-arrow"/></svg></a>
+        <a href="https://apps.apple.com/app/strokesense/id6743031338">What are the symptoms of a stroke?<svg style="color:var(--accent)"><use href="#i-arrow"/></svg></a>
+      </div>
+    </div>
   </section>
 
   <section>
-    <h2>Everything you need to understand stroke</h2>
-    <p class="muted" style="margin:0 0 20px">Clear, plain-language lessons for everyone, from caregivers to curious learners.</p>
-    <div class="grid">
-      <div class="card"><h3>Learn</h3><p>Types of stroke, risk factors, prevention, and how doctors treat a stroke.</p></div>
-      <div class="card"><h3>Stroke Expert</h3><p>Ask questions and get plain-language answers about stroke.</p></div>
-      <div class="card"><h3>Podcast</h3><p>Conversations with experts and stories from survivors.</p></div>
-      <div class="card"><h3>Quiz</h3><p>Ten questions, about three minutes. See what you know.</p></div>
-      <div class="card"><h3>News</h3><p>The latest stroke research and articles, in one place.</p></div>
-      <div class="card"><h3>Saved</h3><p>Keep the episodes you want to come back to.</p></div>
+    <h2 class="section-title">Everything in the app</h2>
+    <div class="list two">
+      <div class="row"><svg><use href="#i-book"/></svg><div><div class="title">Learn</div><div class="subtitle">Types, risk factors, prevention and treatments</div></div></div>
+      <div class="row"><svg><use href="#i-bubble"/></svg><div><div class="title">Stroke Expert</div><div class="subtitle">Ask anything about stroke</div></div></div>
+      <div class="row"><svg><use href="#i-phones"/></svg><div><div class="title">Podcast Episodes</div><div class="subtitle">Conversations about stroke</div></div></div>
+      <div class="row"><svg><use href="#i-seal"/></svg><div><div class="title">Quiz</div><div class="subtitle">10 questions · about 3 minutes</div></div></div>
+      <div class="row"><svg><use href="#i-news"/></svg><div><div class="title">News</div><div class="subtitle">The latest on stroke research</div></div></div>
+      <div class="row"><svg><use href="#i-heart"/></svg><div><div class="title">Saved</div><div class="subtitle">Episodes to come back to</div></div></div>
     </div>
   </section>
 </main>
 
 <footer><div class="wrap">
-  <span>StrokeSense provides general education, not medical advice.</span>
+  <span>If you notice signs of a stroke, call 911 or your local emergency number right away.</span>
   <span><a href="/support">Support</a> · <a href="/privacy">Privacy Policy</a></span>
 </div></footer>
+
+<script>
+  // Mirrors the app's Home card: signs advance every 3 seconds; tapping a letter jumps to it.
+  const signs = [
+    ["B", "Balance", "Sudden loss of balance or dizziness", "i-fall"],
+    ["E", "Eyes", "Sudden blurred, double or lost vision", "i-eye"],
+    ["F", "Face", "One side of the face droops", "i-face"],
+    ["A", "Arms", "One arm or leg is weak or numb", "i-arms"],
+    ["S", "Speech", "Slurred speech or trouble speaking", "i-speech"],
+    ["T", "Time", "Call 911 or your local emergency number", "i-clock"]
+  ];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const sign = document.getElementById("sign");
+  const letters = document.getElementById("letters");
+  let index = 0, timer;
+
+  signs.forEach(([letter, name, prompt], i) => {
+    const b = document.createElement("button");
+    b.textContent = letter;
+    b.setAttribute("aria-label", `${name}: ${prompt}`);
+    b.onclick = () => show(i);
+    letters.append(b);
+  });
+
+  function show(i) {
+    index = i;
+    const [, name, prompt, icon] = signs[i];
+    sign.innerHTML = `<svg style="color:#fff" aria-hidden="true"><use href="#${icon}"/></svg><div><h3>${name}</h3><p>${prompt}</p></div>`;
+    sign.classList.remove("sign-panel"); void sign.offsetWidth; sign.classList.add("sign-panel");
+    [...letters.children].forEach((b, j) => b.setAttribute("aria-pressed", j === i));
+    clearTimeout(timer);
+    if (!reduce) timer = setTimeout(() => show((index + 1) % signs.length), 3000);
+  }
+  show(0);
+
+  // Types example questions into the field, like the app's TypingPrompt.
+  const examples = ["Can young people have a stroke?", "How long does recovery take?", "Is a mini-stroke serious?", "Can stress cause a stroke?", "What does a stroke feel like?"];
+  const typed = document.getElementById("typed");
+  if (reduce) { typed.textContent = examples[0]; }
+  else {
+    let e = 0, c = 0, deleting = false;
+    (function tick() {
+      const text = examples[e];
+      if (!deleting) { c++; if (c > text.length) { deleting = true; return setTimeout(tick, 1800); } }
+      else { c -= 2; if (c <= 0) { c = 0; deleting = false; e = (e + 1) % examples.length; } }
+      typed.textContent = text.slice(0, c);
+      setTimeout(tick, deleting ? 25 : 55);
+    })();
+  }
+</script>
 </body>
 </html>
