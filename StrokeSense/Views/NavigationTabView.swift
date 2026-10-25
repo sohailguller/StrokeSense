@@ -67,4 +67,5 @@ private struct TabBarMinimizeOnScroll: ViewModifier {
     NavigationTabView(saveAction: {})
         .environmentObject(UserStore())
         .environmentObject(FavoritesManager())
+        .environmentObject(LanguageSettings())
 }

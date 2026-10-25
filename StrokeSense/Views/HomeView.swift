@@ -52,7 +52,7 @@ struct HomeView: View {
             .frame(maxWidth: .infinity)
         }
         .background(.surface)
-        .navigationTitle("Home")
+        .localizedNavigationTitle("Home")
         .toolbar {
             if #available(iOS 26.0, *) {
                 // The avatar is its own circle, so skip the glass circle iOS 26 puts behind toolbar items.
@@ -93,7 +93,7 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    private func articleSection<Destination: View>(_ title: String, articles: [NewsArticle], @ViewBuilder seeAll: () -> Destination) -> some View {
+    private func articleSection<Destination: View>(_ title: LocalizedStringKey, articles: [NewsArticle], @ViewBuilder seeAll: () -> Destination) -> some View {
         if !articles.isEmpty {
             VStack(alignment: .leading, spacing: Spacing.m) {
                 SectionHeader(title, seeAll: seeAll)
@@ -117,9 +117,10 @@ struct HomeView: View {
 /// The panel and the letter indicator move together, sideways, on one animation.
 private struct BeFastHeroCard: View {
     private struct Sign {
+        /// The English mnemonic's letter, kept in every language.
         let letter: String
-        let name: String
-        let prompt: String
+        let name: LocalizedStringKey
+        let prompt: LocalizedStringKey
         let systemImage: String
     }
 
@@ -193,7 +194,7 @@ private struct BeFastHeroCard: View {
                         show(i)
                     } label: {
                         VStack(spacing: Spacing.xxs) {
-                            Text(signs[i].letter)
+                            Text(verbatim: signs[i].letter)
                                 .font(.letterMark)
                                 // Inactive letters recede into a deeper red instead of fading to pink.
                                 .foregroundStyle(i == index ? AnyShapeStyle(.white) : AnyShapeStyle(.black.opacity(0.28)))
@@ -212,11 +213,13 @@ private struct BeFastHeroCard: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel("\(signs[i].name): \(signs[i].prompt)")
+                    .accessibilityLabel(Text(signs[i].name) + Text(verbatim: ", ") + Text(signs[i].prompt))
                     .accessibilityAddTraits(i == index ? .isSelected : [])
                 }
             }
             .sensoryFeedback(.selection, trigger: taps)
+            // The letters spell the English mnemonic, so they read left to right in every language.
+            .environment(\.layoutDirection, .leftToRight)
 
             NavigationLink("Learn the Signs", value: "befast")
                 .buttonStyle(ChunkyButtonStyle(
@@ -246,6 +249,7 @@ private struct AskExpertCard: View {
     @State private var typedQuestion: String?
     @ScaledMetric(relativeTo: .title2) private var sendSize: CGFloat = 32
 
+    /// Translation keys; TypingPrompt types them out in the app's language.
     private static let examples = [
         "Can young people have a stroke?",
         "How long does recovery take?",
@@ -297,7 +301,7 @@ private struct AskExpertCard: View {
             .accessibilityLabel("Ask the Stroke Expert a question")
 
             SuggestionList(questions: Array(ChatSession.suggestions.prefix(2)), horizontalPadding: 0) { question in
-                session.ask(question)
+                session.ask(question.localized)
                 router.selectedTab = .ask
             }
         }
@@ -319,10 +323,11 @@ private struct TypingPrompt: View {
     @Binding var current: String?
     @State private var shown = ""
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.locale) private var locale
 
     var body: some View {
         HStack(spacing: 1) {
-            Text(shown)
+            Text(verbatim: shown)
                 .font(.body)
                 .foregroundStyle(.ink)
                 .lineLimit(1)
@@ -332,7 +337,8 @@ private struct TypingPrompt: View {
                 .frame(width: 2, height: 22)
         }
         .accessibilityHidden(true)
-        .task { await run() }
+        // Starts over in the new language when the language changes.
+        .task(id: locale.identifier) { await run() }
     }
 
     /// Restarts from an empty field each time the card appears (e.g. returning to Home), and
@@ -341,7 +347,7 @@ private struct TypingPrompt: View {
         shown = ""
         var index = 0
         while !Task.isCancelled {
-            let prompt = prompts[index]
+            let prompt = prompts[index].localized
             current = prompt
             if reduceMotion {
                 shown = prompt
@@ -441,4 +447,5 @@ private struct QuizCard: View {
     .environmentObject(FavoritesManager())
     .environmentObject(AppRouter())
     .environmentObject(ChatSession())
+    .environmentObject(LanguageSettings())
 }

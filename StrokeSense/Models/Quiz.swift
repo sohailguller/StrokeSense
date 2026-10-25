@@ -41,8 +41,13 @@ class Quiz: ObservableObject {
     @Published var questions: [Question] = []
 
     init() {
+        questions = Self.randomQuestions()
+    }
+
+    /// Ten questions in random order, in the app's language.
+    static func randomQuestions() -> [Question] {
         let allQuestions: [Question] = load("Questions")
-        self.questions = Array(allQuestions.shuffled().prefix(10))
+        return allQuestions.shuffled().prefix(10).map(\.localized)
     }
 }
 

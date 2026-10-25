@@ -16,4 +16,9 @@ struct Question: Decodable, Hashable {
         case choices
         case correctAnswer = "correct_answer"
     }
+
+    /// The question in the app's language. Questions.json is English and doubles as the keys.
+    var localized: Question {
+        Question(question: question.localized, choices: choices.map(\.localized), correctAnswer: correctAnswer.localized)
+    }
 }

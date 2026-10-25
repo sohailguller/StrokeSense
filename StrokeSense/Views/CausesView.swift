@@ -10,9 +10,9 @@ import SwiftUI
 struct CausesView: View {
     private struct RiskFactor: Identifiable {
         let systemImage: String
-        let title: String
-        let detail: String
-        var id: String { title }
+        let title: LocalizedStringKey
+        let detail: LocalizedStringKey
+        var id: String { systemImage }
     }
 
     private let factors = [

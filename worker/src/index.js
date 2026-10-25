@@ -20,6 +20,21 @@ const SYSTEM_PROMPT =
   "When some ask who you are say, 'I’m an AI designed to provide information about strokes. " +
   "If you have any questions related to strokes, feel free to ask!'";
 
+// The languages the app is translated into (StrokeSense/Models/AppLanguage.swift), so answers
+// match the app. Anything else falls back to the system prompt alone.
+const LANGUAGES = {
+  es: "Spanish", fr: "French", de: "German", it: "Italian", "pt-BR": "Brazilian Portuguese",
+  nl: "Dutch", pl: "Polish", ru: "Russian", uk: "Ukrainian", tr: "Turkish", ar: "Arabic",
+  hi: "Hindi", bn: "Bengali", ur: "Urdu", "zh-Hans": "Simplified Chinese",
+  "zh-Hant": "Traditional Chinese", ja: "Japanese", ko: "Korean", vi: "Vietnamese", id: "Indonesian",
+};
+
+function systemPrompt(languageCode) {
+  const language = LANGUAGES[languageCode];
+  if (!language) return SYSTEM_PROMPT;
+  return `${SYSTEM_PROMPT} The app is set to ${language}: reply in ${language} unless the user clearly writes in another language.`;
+}
+
 let jwksCache = { keys: null, fetchedAt: 0 };
 
 export default {
@@ -42,9 +57,11 @@ export default {
     }
 
     let messages;
+    let language;
     try {
       const body = await request.json();
       messages = sanitizeMessages(body && body.messages);
+      language = body && body.language;
     } catch (error) {
       return errorResponse(400, error instanceof ClientError ? error.message : "Invalid request body.");
     }
@@ -59,7 +76,7 @@ export default {
         },
         body: JSON.stringify({
           model: MODEL,
-          messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+          messages: [{ role: "system", content: systemPrompt(language) }, ...messages],
           max_tokens: MAX_REPLY_TOKENS,
         }),
       });

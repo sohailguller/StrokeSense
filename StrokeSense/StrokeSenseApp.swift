@@ -44,25 +44,42 @@ struct StrokeSenseApp: App {
     
     @StateObject private var store = UserStore()
     @StateObject private var favoritesManager = FavoritesManager()
+    @StateObject private var languageSettings = LanguageSettings()
     /// Light unless the user picks Automatic or Dark in Profile.
     @AppStorage("appearance") private var appearance = AppAppearance.light
+    /// The language screen shows once, on first launch; after that it's in Profile.
+    @AppStorage("hasChosenLanguage") private var hasChosenLanguage = false
 
     var body: some Scene {
         WindowGroup {
-            NavigationTabView {
-                Task {
-                    do {
-                        try await store.save(user: store.user)
-                    } catch {
-                        Logger.app.error("Couldn't save profile: \(error.localizedDescription)")
+            Group {
+                if hasChosenLanguage {
+                    NavigationTabView {
+                        Task {
+                            do {
+                                try await store.save(user: store.user)
+                            } catch {
+                                Logger.app.error("Couldn't save profile: \(error.localizedDescription)")
+                            }
+                        }
                     }
+                    .transition(.opacity)
+                } else {
+                    LanguageWelcomeView {
+                        withAnimation(.smooth) { hasChosenLanguage = true }
+                    }
+                    .transition(.opacity)
                 }
             }
+            // Every screen reads its text, number formats and direction from the chosen language.
+            .environment(\.locale, languageSettings.language.locale)
+            .environment(\.layoutDirection, languageSettings.language.layoutDirection)
             // One type family across the app: SF Pro Rounded (see DesignSystem/Theme.swift).
             .fontDesign(.rounded)
             .preferredColorScheme(appearance.colorScheme)
             .environmentObject(store)
             .environmentObject(favoritesManager)
+            .environmentObject(languageSettings)
             .task {
                 do {
                     try await store.load()

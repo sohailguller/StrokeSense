@@ -26,7 +26,7 @@ enum AppAppearance: String, CaseIterable, Identifiable {
 
     var id: Self { self }
 
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
         case .system: "Automatic"
         case .light: "Light"

@@ -1,0 +1,9 @@
+/*
+  Localizable.strings (English)
+  StrokeSense
+
+  English is the development language: the English text in the code is the key, so it
+  needs no entries here. This file exists so the app can switch back to English at runtime.
+  Every other <code>.lproj/Localizable.strings translates the same keys, including the
+  quiz in Resources/Questions.json.
+*/

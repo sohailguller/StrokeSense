@@ -15,6 +15,8 @@ struct Message: Codable {
 
 private struct ChatRequest: Encodable {
     let messages: [Message]
+    /// The app's language, so the Stroke Expert answers in it.
+    let language: String
 }
 
 private struct ChatResponse: Decodable {
@@ -23,15 +25,19 @@ private struct ChatResponse: Decodable {
 }
 
 enum OpenAIClientError: LocalizedError {
-    case server(String)
+    case busy
+    case unavailable
     case emptyResponse
 
+    // Written here rather than taken from the server, so they're in the app's language.
     var errorDescription: String? {
         switch self {
-        case .server(let message):
-            return message
+        case .busy:
+            String(localized: "The Stroke Expert is busy right now. Please try again later.")
+        case .unavailable:
+            String(localized: "The Stroke Expert couldn't answer right now. Please try again.")
         case .emptyResponse:
-            return "The Stroke Expert returned an empty response."
+            String(localized: "The Stroke Expert returned an empty response.")
         }
     }
 }
@@ -49,14 +55,14 @@ class OpenAIClient {
         request.timeoutInterval = 60
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue(appCheckToken, forHTTPHeaderField: "X-Firebase-AppCheck")
-        request.httpBody = try JSONEncoder().encode(ChatRequest(messages: messages))
+        request.httpBody = try JSONEncoder().encode(ChatRequest(messages: messages, language: AppLanguage.current.rawValue))
 
         let (data, response) = try await URLSession.shared.data(for: request)
         let decoded = try? JSONDecoder().decode(ChatResponse.self, from: data)
 
         if let httpResponse = response as? HTTPURLResponse, !(200..<300).contains(httpResponse.statusCode) {
             Logger.app.error("Chat server error \(httpResponse.statusCode): \(decoded?.error ?? "no message")")
-            throw OpenAIClientError.server(decoded?.error ?? "The Stroke Expert couldn't answer right now. Please try again.")
+            throw httpResponse.statusCode == 429 ? OpenAIClientError.busy : OpenAIClientError.unavailable
         }
 
         guard let reply = decoded?.reply, !reply.isEmpty else {

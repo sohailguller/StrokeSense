@@ -53,13 +53,13 @@ struct EducationView: View {
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .background(.surface)
-        .navigationTitle("Learn")
+        .localizedNavigationTitle("Learn")
         .navigationDestination(for: LearnTopic.self) { $0.destination }
         .fullScreenCover(isPresented: $showQuiz) { GameView() }
         .onAppear { videoVM.fetchVideos() }
     }
 
-    private func topicLink(_ topic: LearnTopic, title: String, subtitle: String, systemImage: String, tint: Color = .accentColor) -> some View {
+    private func topicLink(_ topic: LearnTopic, title: LocalizedStringKey, subtitle: LocalizedStringKey, systemImage: String, tint: Color = .accentColor) -> some View {
         NavigationLink(value: topic) {
             LearnRow(title: title, subtitle: subtitle, systemImage: systemImage, tint: tint)
         }
@@ -82,8 +82,8 @@ enum LearnTopic: Hashable {
 }
 
 private struct LearnRow: View {
-    let title: String
-    let subtitle: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
     let systemImage: String
     var tint: Color = .accentColor
     @ScaledMetric(relativeTo: .body) private var minHeight: CGFloat = 56

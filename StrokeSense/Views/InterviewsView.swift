@@ -33,7 +33,7 @@ struct InterviewsView: View {
             }
         }
         .background(.surface)
-        .navigationTitle("Podcast Episodes")
+        .localizedNavigationTitle("Podcast Episodes")
         .refreshable { viewModel.fetchVideos(force: true) }
         .onAppear { viewModel.fetchVideos() }
         .sheet(item: $playingVideo) { VideoPlayerSheet(video: $0) }

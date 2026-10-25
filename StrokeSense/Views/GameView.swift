@@ -137,7 +137,7 @@ struct GameView: View {
         .padding(.bottom, Spacing.m)
     }
 
-    private func resultTitle(total: Int) -> String {
+    private func resultTitle(total: Int) -> LocalizedStringKey {
         switch Double(score) / Double(max(total, 1)) {
         case 0.9...: return "Excellent"
         case 0.7..<0.9: return "Well done"
@@ -147,9 +147,8 @@ struct GameView: View {
     }
 
     private func restart() {
-        let allQuestions: [Question] = load("Questions")
         withAnimation(.snappy) {
-            quiz.questions = Array(allQuestions.shuffled().prefix(10))
+            quiz.questions = Quiz.randomQuestions()
             answers = []
             selectedAnswer = nil
             currentIndex = 0
@@ -271,7 +270,7 @@ private struct QuizReview: View {
             }
             .scrollContentBackground(.hidden)
             .background(.surface)
-            .navigationTitle("Your Answers")
+            .localizedNavigationTitle("Your Answers")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

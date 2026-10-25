@@ -31,6 +31,7 @@ struct ResourcesView: View {
 
 /// Article list that opens each link in an in-app Safari sheet.
 private struct ArticleListView: View {
+    /// Translation key.
     let title: String
     let articles: [NewsArticle]
     let onRefresh: () -> Void
@@ -54,7 +55,7 @@ private struct ArticleListView: View {
                 ProgressView()
             }
         }
-        .navigationTitle(title)
+        .localizedNavigationTitle(title)
         .refreshable { onRefresh() }
         .safariSheet(url: $openArticle)
     }

@@ -14,10 +14,10 @@ import CoreImage.CIFilterBuiltins
 
 /// App Store style section title with an optional "See All" link.
 struct SectionHeader<Destination: View>: View {
-    let title: String
+    let title: LocalizedStringKey
     let destination: Destination?
 
-    init(_ title: String, @ViewBuilder seeAll destination: () -> Destination) {
+    init(_ title: LocalizedStringKey, @ViewBuilder seeAll destination: () -> Destination) {
         self.title = title
         self.destination = destination()
     }
@@ -39,7 +39,7 @@ struct SectionHeader<Destination: View>: View {
 }
 
 extension SectionHeader where Destination == EmptyView {
-    init(_ title: String) {
+    init(_ title: LocalizedStringKey) {
         self.title = title
         self.destination = nil
     }
@@ -474,6 +474,7 @@ struct VideoPlayerSheet: View {
 // MARK: - Topic screens
 
 struct Source: Identifiable, Hashable {
+    /// Translation key for the source's description.
     let name: String
     let url: URL
     var id: URL { url }
@@ -487,8 +488,8 @@ struct Source: Identifiable, Hashable {
 
 /// Header for a topic: symbol, headline and summary.
 struct TopicHero: View {
-    let title: String
-    let summary: String
+    let title: LocalizedStringKey
+    let summary: LocalizedStringKey
     let systemImage: String
     var tint: Color = .accentColor
     @State private var appeared = false
@@ -520,6 +521,7 @@ struct TopicHero: View {
 
 /// Shared layout for every education topic: hero, content, sources and disclaimer.
 struct InfoTopicScreen<Content: View>: View {
+    /// Translation key.
     let navigationTitle: String
     let hero: TopicHero
     let sources: [Source]
@@ -539,7 +541,7 @@ struct InfoTopicScreen<Content: View>: View {
             .frame(maxWidth: .infinity)
         }
         .background(.surface)
-        .navigationTitle(navigationTitle)
+        .localizedNavigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -547,8 +549,8 @@ struct InfoTopicScreen<Content: View>: View {
 /// Symbol, title and description in a card list.
 struct TopicItemRow: View {
     let systemImage: String
-    let title: String
-    let detail: String
+    let title: LocalizedStringKey
+    let detail: LocalizedStringKey
     var tint: Color = .accentColor
 
     var body: some View {
@@ -607,7 +609,7 @@ struct SourceFootnote: View {
                         openURL = source.url
                     } label: {
                         HStack(alignment: .firstTextBaseline, spacing: Spacing.xs) {
-                            Text(source.name)
+                            Text(LocalizedStringKey(source.name))
                                 .multilineTextAlignment(.leading)
                             Image(systemName: "arrow.up.right")
                                 .imageScale(.small)
@@ -627,10 +629,10 @@ struct SourceFootnote: View {
 struct TopicDetail: Identifiable {
     let id = UUID()
     let systemImage: String
-    let title: String
-    let summary: String
-    let body: String
-    let points: [String]
+    let title: LocalizedStringKey
+    let summary: LocalizedStringKey
+    let body: LocalizedStringKey
+    let points: [LocalizedStringKey]
     let source: Source
 }
 
@@ -648,13 +650,13 @@ struct TopicDetailSheet: View {
                         .foregroundStyle(.ink)
                         .fixedSize(horizontal: false, vertical: true)
                     VStack(alignment: .leading, spacing: Spacing.s) {
-                        ForEach(detail.points, id: \.self) { point in
+                        ForEach(detail.points.indices, id: \.self) { index in
                             HStack(alignment: .firstTextBaseline, spacing: Spacing.s) {
                                 Circle()
                                     .fill(.tint)
                                     .frame(width: 6, height: 6)
                                     .alignmentGuide(.firstTextBaseline) { $0[.bottom] - 2 }
-                                Text(point)
+                                Text(detail.points[index])
                                     .font(.body)
                                     .foregroundStyle(.ink)
                                     .fixedSize(horizontal: false, vertical: true)

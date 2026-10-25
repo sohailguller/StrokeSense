@@ -25,6 +25,7 @@ final class ChatSession: ObservableObject {
     // The system prompt lives in the chat Worker (worker/src/index.js).
     private let client = OpenAIClient()
 
+    /// Translation keys. Asking one sends the question in the app's language.
     static let suggestions = [
         "What is a stroke?",
         "What are the symptoms of a stroke?",
@@ -32,8 +33,10 @@ final class ChatSession: ObservableObject {
     ]
 
     /// Instant answers for the suggested questions, so they work offline.
-    private static let cannedAnswers: [String: String] = [
-        "What is a stroke?": """
+    private static func cannedAnswer(to question: String) -> String? {
+        guard let suggestion = suggestions.first(where: { $0.localized == question }) else { return nil }
+        return switch suggestion {
+        case "What is a stroke?": String(localized: "answer.whatIsStroke", defaultValue: """
         A **stroke** is a medical emergency that happens when blood flow to part of the brain is blocked, or when a blood vessel in the brain bursts. Brain cells stop receiving oxygen and nutrients and begin to die within minutes.
 
         There are two main types:
@@ -43,8 +46,8 @@ final class ChatSession: ObservableObject {
         A **transient ischemic attack (TIA)**, sometimes called a mini-stroke, is a temporary blockage. Its symptoms go away, but it is a warning sign of a future stroke and needs urgent care.
 
         If you notice signs of a stroke, **call 911 or your local emergency number right away**.
-        """,
-        "What are the symptoms of a stroke?": """
+        """)
+        case "What are the symptoms of a stroke?": String(localized: "answer.symptoms", defaultValue: """
         Stroke symptoms appear **suddenly**. Use **BE FAST** to remember them:
 
         - **B**alance: sudden loss of balance or coordination
@@ -55,8 +58,8 @@ final class ChatSession: ObservableObject {
         - **T**ime: call 911 or your local emergency number and note when symptoms started
 
         A sudden, severe headache with no known cause can also be a sign. Call 911 or your local emergency number even if the symptoms go away.
-        """,
-        "How can I prevent a stroke?": """
+        """)
+        case "How can I prevent a stroke?": String(localized: "answer.prevention", defaultValue: """
         Many strokes can be prevented by managing risk factors:
 
         1. **Control blood pressure**, the leading treatable cause of stroke.
@@ -70,8 +73,10 @@ final class ChatSession: ObservableObject {
         9. **Get atrial fibrillation (AFib) treated** if you have it.
 
         Your doctor can help you understand your own risk and whether medication would help.
-        """
-    ]
+        """)
+        default: nil
+        }
+    }
 
     func ask(_ text: String) {
         let question = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -86,7 +91,7 @@ final class ChatSession: ObservableObject {
         errorMessage = nil
         messages.append(ChatMessage(role: "user", content: question))
 
-        if let answer = Self.cannedAnswers[question] {
+        if let answer = Self.cannedAnswer(to: question) {
             messages.append(ChatMessage(role: "assistant", content: answer))
         } else {
             requestAnswer()
@@ -144,7 +149,7 @@ struct ChatView: View {
             chat
         } else {
             AIConsentView()
-                .navigationTitle("Stroke Expert")
+                .localizedNavigationTitle("Stroke Expert")
                 .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -179,7 +184,7 @@ struct ChatView: View {
             inputFocused = true
             router.focusChatInput = false
         }
-        .navigationTitle("Stroke Expert")
+        .localizedNavigationTitle("Stroke Expert")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if !session.messages.isEmpty {
@@ -244,14 +249,14 @@ private struct ChatIntro: View {
                 .font(.body)
                 .foregroundStyle(.inkMuted)
 
-            SuggestionList(questions: ChatSession.suggestions, onSelect: onSelect)
+            SuggestionList(questions: ChatSession.suggestions) { onSelect($0.localized) }
                 .cardStyle()
                 .padding(.top, Spacing.s)
         }
     }
 }
 
-/// Suggested questions as tappable rows separated by hairlines.
+/// Suggested questions as tappable rows separated by hairlines. Takes and returns translation keys.
 struct SuggestionList: View {
     let questions: [String]
     var horizontalPadding: CGFloat = Spacing.m
@@ -270,7 +275,7 @@ struct SuggestionList: View {
                     onSelect(question)
                 } label: {
                     HStack(spacing: Spacing.s) {
-                        Text(question)
+                        Text(LocalizedStringKey(question))
                             .font(.body)
                             .foregroundStyle(.ink)
                             .multilineTextAlignment(.leading)
@@ -419,7 +424,7 @@ private struct AIConsentView: View {
         .background(.surface)
     }
 
-    private func point(_ systemImage: String, _ text: String) -> some View {
+    private func point(_ systemImage: String, _ text: LocalizedStringKey) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.m) {
             TopicSymbol(systemImage: systemImage)
             Text(text)

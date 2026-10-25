@@ -41,7 +41,7 @@ struct FavoritesView: View {
                 )
             }
         }
-        .navigationTitle("Saved")
+        .localizedNavigationTitle("Saved")
         .sheet(item: $playingVideo) { VideoPlayerSheet(video: $0) }
     }
 }

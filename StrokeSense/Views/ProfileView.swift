@@ -10,6 +10,7 @@ import PhotosUI
 /// Profile, settings and app information, presented as a sheet from Home.
 struct ProfileView: View {
     @EnvironmentObject private var store: UserStore
+    @EnvironmentObject private var languageSettings: LanguageSettings
     @Environment(\.dismiss) private var dismiss
     @State private var photoItem: PhotosPickerItem?
     @State private var showPhotoPicker = false
@@ -60,6 +61,11 @@ struct ProfileView: View {
                             .textContentType(.givenName)
                             .submitLabel(.done)
                     }
+                    NavigationLink {
+                        LanguageListView()
+                    } label: {
+                        LabeledContent("Language", value: languageSettings.language.nativeName)
+                    }
                     Picker("Appearance", selection: $appearance) {
                         ForEach(AppAppearance.allCases) { option in
                             Text(option.title).tag(option)
@@ -104,7 +110,7 @@ struct ProfileView: View {
             .scrollContentBackground(.hidden)
             .background(.surface)
             .tint(.accentColor)
-            .navigationTitle("Profile")
+            .localizedNavigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -143,14 +149,15 @@ struct ProfileView: View {
 
 /// A simple page of text pushed from Profile.
 private struct InfoPage: View {
+    /// Translation key.
     let title: String
-    let paragraphs: [String]
+    let paragraphs: [LocalizedStringKey]
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.m) {
-                ForEach(paragraphs, id: \.self) { paragraph in
-                    Text(paragraph)
+                ForEach(paragraphs.indices, id: \.self) { index in
+                    Text(paragraphs[index])
                         .font(.body)
                         .foregroundStyle(.ink)
                         .fixedSize(horizontal: false, vertical: true)
@@ -160,7 +167,7 @@ private struct InfoPage: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .background(.surface)
-        .navigationTitle(title)
+        .localizedNavigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -289,4 +296,5 @@ private struct PhotoCropView: View {
 #Preview {
     ProfileView()
         .environmentObject(UserStore())
+        .environmentObject(LanguageSettings())
 }

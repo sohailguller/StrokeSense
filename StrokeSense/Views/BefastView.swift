@@ -8,9 +8,10 @@ import SwiftUI
 
 struct BefastView: View {
     private struct Sign: Identifiable {
+        /// The English mnemonic's letter, kept in every language.
         let letter: String
-        let title: String
-        let detail: String
+        let title: LocalizedStringKey
+        let detail: LocalizedStringKey
         var id: String { letter }
     }
 
@@ -38,7 +39,7 @@ struct BefastView: View {
         ) {
             CardList(items: signs, dividerInset: letterWidth + Spacing.m * 2) { sign in
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.m) {
-                    Text(sign.letter)
+                    Text(verbatim: sign.letter)
                         .font(.letterMark)
                         .foregroundStyle(.emergency)
                         .frame(width: letterWidth, alignment: .center)
