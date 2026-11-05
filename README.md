@@ -13,4 +13,12 @@ What's in it:
 
 The app is SwiftUI. Stroke Expert goes through a small Cloudflare Worker in `worker/`, so no API key ever ships in the app, and requests are checked with Firebase App Check. The landing/support/privacy site is in `website/` and runs on Vercel.
 
+## Running it yourself
+
+You'll need your own Firebase project, since my config isn't in the repo.
+
+1. Create an iOS app in [Firebase](https://console.firebase.google.com) and download its `GoogleService-Info.plist`
+2. Drop it in `StrokeSense/` (use `GoogleService-Info.example.plist` to see what it should look like)
+3. For Stroke Expert, set the Firebase values in `worker/wrangler.toml` to yours and add an OpenAI key with `npx wrangler secret put OPENAI_API_KEY`
+
 This lived on my laptop for a while before I put it on GitHub.
