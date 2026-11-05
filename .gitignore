@@ -11,3 +11,6 @@ build/
 worker/node_modules/
 worker/.wrangler/
 worker/.dev.vars
+
+# Firebase config. Use your own, see README
+StrokeSense/GoogleService-Info.plist
